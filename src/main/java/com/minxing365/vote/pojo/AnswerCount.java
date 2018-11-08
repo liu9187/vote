@@ -10,6 +10,12 @@ public class AnswerCount {
     private String optiontile;
     //获取答案总条数
     private Integer count;
+    //图片地址
+    private String pictureUrl;
+    //视频地址
+    private String viewUrl;
+    //备注
+    private String remarks;
 
     public Integer getOptionId() {
         return optionId;
@@ -33,5 +39,29 @@ public class AnswerCount {
 
     public void setCount(Integer count) {
         this.count = count;
+    }
+
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
+
+    public String getViewUrl() {
+        return viewUrl;
+    }
+
+    public void setViewUrl(String viewUrl) {
+        this.viewUrl = viewUrl;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }

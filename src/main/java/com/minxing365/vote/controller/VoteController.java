@@ -43,7 +43,7 @@ public class VoteController {
      * @param endTime
      * @return
      */
-    @RequestMapping(value = "/insertVoteMainTable", method = {RequestMethod.POST})
+    @RequestMapping(value= "/insertVoteMainTable", method = {RequestMethod.GET})
     public String insertVoteMainTable(@RequestParam String id, @RequestParam String voteTitle, @RequestParam String createUserNum, @RequestParam String createUserName, @RequestParam long endTime) {
         VoteMainTable voteMainTable = new VoteMainTable();
         voteMainTable.setId( id );
@@ -468,10 +468,30 @@ public class VoteController {
           //  jsonObject.put( "message","查询成功" );
             log.info( "-------select invocation succeeded" );
         } catch (Exception e) {
-              jsonObject.put( "message","查询接口调用异常" );
-            log.info( "-------select invocation failed" );
+              jsonObject.put( "message","select接口调用异常" );
+            log.info( "-------select invocation failed" ,e);
         }
         return jsonObject.toJSONString();
+    }
+
+    /**
+     * app页面显示
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/selectOne", method = {RequestMethod.GET})
+    public String selectOne(@RequestParam String id){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            VoteCount voteCount=   voteService.selectOne( id );
+              jsonObject.put( "voteCount",voteCount );
+              jsonObject.put( "message","查询成功" );
+
+        }catch (Exception e){
+            jsonObject.put( "message","selectOne接口调用异常" );
+            log.info( "-------selectOne invocation failed" ,e);
+        }
+        return  jsonObject.toJSONString();
     }
 
     /**

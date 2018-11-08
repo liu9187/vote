@@ -29,8 +29,38 @@ public class VoteServiceImpl implements VoteService {
     @Override
     @Transactional
     public Integer insertVoteMainTable(VoteMainTable voteMainTable) {
-
-        return voteMapper.insertVoteMainTable( voteMainTable );
+        //根据id查询主表内容
+        //  VoteMainTable voteMainTable=null;
+        try {
+            //   voteMainTable= voteMapper.selectVoteMainTableById( id );
+            //新增主表
+            Integer re = voteMapper.insertVoteMainTable( voteMainTable );
+            if (re > 0) {
+                log.info( "----新增主表成功----" );
+                String voteTitle = voteMainTable.getVoteTitle();
+                //接口进行发布
+                Integer result = null;
+                if (null != voteMainTable.getId()) {
+                    result = voteMapper.updateState( voteMainTable.getId() );
+                } else {
+                    log.error( "<<<<<主表发布失败" );
+                    return null;
+                }
+                if (result > 0) {
+                    //状态更新成功，可以发布消息
+                    //发布消息接口
+                    log.info( "-------消息推送开始" );
+                    Thread thread = new Thread( () -> PushMessage.sendOcuMessageToUsers( voteTitle, "内容" ) );
+                    thread.start();
+                }
+            } else {
+                log.error( "<<<<<主表新增异常" );
+                return null;
+            }
+        } catch (Exception e) {
+            log.error( "发布消息出现异常", e );
+        }
+        return null;
     }
 
     @Override
@@ -96,9 +126,21 @@ public class VoteServiceImpl implements VoteService {
     @Transactional
     public Integer updateState(String id) {
         Integer result = voteMapper.updateState( id );
-        if (result > 0) {
-            //发布消息接口
+        //根据id查询主表内容
+        VoteMainTable voteMainTable = null;
+        try {
+            voteMainTable = voteMapper.selectVoteMainTableById( id );
+        } catch (Exception e) {
+
         }
+        if (result > 0) {
+            String voteTitle = voteMainTable.getVoteTitle();
+
+            //发布消息接口
+            Thread thread = new Thread( () -> PushMessage.sendOcuMessageToUsers( voteTitle, "内容" ) );
+            thread.start();
+        }
+
         return result;
     }
 
@@ -159,30 +201,30 @@ public class VoteServiceImpl implements VoteService {
                     List<AnswerCount> list = new ArrayList<>();
                     AnswerCount answerCount = new AnswerCount();
                     //根据主表id调用选择表信息
-                        //获取选择表信息
-                        List<OptionTable> optionList = voteMapper.selectOptionTableByvoteId( id );
-                        if (null != optionList && optionList.size() > 0) {
-                            for (int j = 0; j < optionList.size(); j++) {
-                                if (null == optionList.get( j ).getId()) {
-                                    log.error( "<<<<<获取选择表id为null" );
-                                    continue;
-                                }
-                                //根据选择表的信息查询答案表
-                                Integer optionId = optionList.get( j ).getId();
-                                //添加到 list
-                                answerCount.setOptionId( optionId );
-                                //选择表题目
-                                String optiontile = optionList.get( j ).getOptionTitle();
-                                //添加到 list 选择表题目
-                                answerCount.setOptiontile( optiontile );
-                                //获取答案总条数
-                                Integer count = voteMapper.selectCount( optionId );
-                                //答案总条数 添加到 list
-                                answerCount.setCount( count );
-                                list.add( answerCount );
+                    //获取选择表信息
+                    List<OptionTable> optionList = voteMapper.selectOptionTableByvoteId( id );
+                    if (null != optionList && optionList.size() > 0) {
+                        for (int j = 0; j < optionList.size(); j++) {
+                            if (null == optionList.get( j ).getId()) {
+                                log.error( "<<<<<获取选择表id为null" );
+                                continue;
                             }
-
+                            //根据选择表的信息查询答案表
+                            Integer optionId = optionList.get( j ).getId();
+                            //添加到 list
+                            answerCount.setOptionId( optionId );
+                            //选择表题目
+                            String optiontile = optionList.get( j ).getOptionTitle();
+                            //添加到 list 选择表题目
+                            answerCount.setOptiontile( optiontile );
+                            //获取答案总条数
+                            Integer count = voteMapper.selectCount( optionId );
+                            //答案总条数 添加到 list
+                            answerCount.setCount( count );
+                            list.add( answerCount );
                         }
+
+                    }
                     //list 封装到 对象
                     voteCount.setList( list );
                     //封装到显示list
@@ -201,12 +243,75 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
+    public VoteCount selectOne(String id) {
+        VoteCount voteCount = new VoteCount();
+        try {
+            //根据主表id查询主表
+            VoteMainTable voteMainTable = voteMapper.selectVoteMainTableById( id );
+            //如果 查询非空
+            if (null != voteMainTable) {
+                //主表标题
+                voteCount.setVote( voteMainTable.getVoteTitle() );
+                //答案统计列表
+                List<AnswerCount> list = new ArrayList<>();
+                AnswerCount answerCount = new AnswerCount();
+                //根据主表id调用选择表信息
+                //获取选择表信息
+                List<OptionTable> optionList = voteMapper.selectOptionTableByvoteId( id );
+                if (null != optionList && optionList.size() > 0) {
+                    for (int j = 0; j < optionList.size(); j++) {
+                        if (null == optionList.get( j ).getId()) {
+                            log.error( "<<<<<获取选择表id为null" );
+                            continue;
+                        }
+                        //根据选择表的信息查询答案表
+                        Integer optionId = optionList.get( j ).getId();
+                        //添加到 list选择表id
+                        answerCount.setOptionId( optionId );
+                        //选择表题目
+                        String optiontile = optionList.get( j ).getOptionTitle();
+                        //添加到 list 选择表题目
+                        answerCount.setOptiontile( optiontile );
+                        //获取选择表图片路径
+                        String pictureUrl = optionList.get( j ).getPictureUrl();
+                        //添加视频路径到视图
+                        answerCount.setPictureUrl( pictureUrl );
+                        //获取视频路径
+                        String viewUrl = optionList.get( j ).getViewUrl();
+                        //视频添加到视图
+                        answerCount.setViewUrl( viewUrl );
+                        String remarks = optionList.get( j ).getRemarks();
+                        answerCount.setRemarks(remarks);
+                        //获取答案总条数
+                        Integer count = voteMapper.selectCount( optionId );
+                        //答案总条数 添加到 list
+                        answerCount.setCount( count );
+                        list.add( answerCount );
+                    }
+
+                }
+                //list 封装到 对象
+                voteCount.setList( list );
+            }
+            //查询主表为null
+            else {
+                //如果没有
+                log.info( "-----没有查到相关投票" );
+            }
+
+        } catch (Exception e) {
+            log.error( "<<<<<<<<selectVoteMainTableByCondition 方法失败", e );
+        }
+
+        return voteCount;
+    }
+
+    @Override
     public List<VoteMainTable> selectVoteMainTable(Integer pageNum, Integer pageSize) {
         //分页插件
         PageHelper.startPage( pageNum, pageSize );
         return voteMapper.selectVoteMainTable();
     }
-
 
 
 }
