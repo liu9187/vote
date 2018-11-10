@@ -15,6 +15,7 @@ if [ -f /opt/ewhine/etc/init.d/mx_env ]; then
 fi
 
 DAEMON="/usr/bin/java"
+#修改项目名称 启动脚本名称必须和这个配置的名称保持一致
 DESC=mx_vote
 
 min_heap_size="128m"
@@ -24,9 +25,8 @@ serverdir=/home/ewhine/deploy/mx_vote
 serverjar=*.jar
 server_temp=$serverdir/tmp
 server_logs=$serverdir/logs
-server_name="mx_vote"
+server_name=$DESC
 PIDFILE=/home/ewhine/var/run/$server_name.pid
-server_thirdpartylib=$serverdir/thirdpartylib
 USER=ewhine
 DB_ENV=production
 
@@ -38,7 +38,7 @@ set -e
 iden=mx_vote
 identity="-Didentity=$iden"
 
-ARGS="-server -Xms$min_heap_size -Xmx$max_heap_size -Dspring.config.location=$serverdir/config/application.properties -Dfile.encoding=UTF-8 -cp "$serverdir/*.jar:$server_lib/*.jar:$server_thirdpartylib/*.jar:" -jar  $serverdir/$serverjar"
+ARGS="-server -Xms$min_heap_size -Xmx$max_heap_size -Dconf=$serverdir/config/application.properties  -Dfile.encoding=UTF-8 -jar  $serverdir/$serverjar"
 
 case "$1" in
   start)
@@ -80,10 +80,12 @@ case "$1" in
   update)
         echo -n "update $DESC... "
         cd $serverdir
-        $DAEMON -Dspring.config.location=$serverdir/config/application.properties -Dfile.encoding=UTF-8 -cp "$serverdir/*.jar:$server_lib/*.jar:$server_thirdpartylib/*.jar:" -jar  $serverdir/$serverjar update
+        $DAEMON -Dspring.config.location=config/application.properties -jar $serverjar update
         ;;
   *)
-        echo "Usage: /etc/init.d/$server_name {start|stop|restart|force-reload|update}" >&2
+        echo "Usage: /etc/init.d/$server_name {start|stop|restart|force-reload}" >&2
         exit 1
         ;;
 esac
+
+exit 0

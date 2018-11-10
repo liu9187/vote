@@ -44,7 +44,17 @@ public class VoteController {
      * @return
      */
     @RequestMapping(value= "/insertVoteMainTable", method = {RequestMethod.GET})
-    public String insertVoteMainTable(@RequestParam String id, @RequestParam String voteTitle, @RequestParam String createUserNum, @RequestParam String createUserName, @RequestParam long endTime) {
+    public String insertVoteMainTable(@RequestParam String id, @RequestParam String voteTitle, @RequestParam String createUserNum, @RequestParam String createUserName, @RequestParam Long endTime) {
+             log.info( "insertVoteMainTable parameter : id="+id+" ; createUserNum=" +createUserNum+"; createUserName"+createUserName+"; endTime"+endTime);
+        JSONObject jsonObject = new JSONObject();
+
+        if (null ==endTime || null ==id|| null ==voteTitle || null ==createUserName ||
+                "".equals( "voteTitle" )||"".equals( "createUserNum" )||"".equals( "createUserName" )){
+            jsonObject.put( "message","参数错误" );
+            log.error( "<<<<<<<<<parameter error " );
+            return jsonObject.toJSONString();
+
+        }
         VoteMainTable voteMainTable = new VoteMainTable();
         voteMainTable.setId( id );
         voteMainTable.setVoteTitle( voteTitle );
@@ -52,17 +62,19 @@ public class VoteController {
         voteMainTable.setCreateUserNum( createUserNum );
         voteMainTable.setEndTime( endTime );
         voteMainTable.setState( 1 );
-        Integer result = voteService.insertVoteMainTable( voteMainTable );
+        try {
+            Integer result = voteService.insertVoteMainTable( voteMainTable );
+            if (null != result && result>0){
+                log.info( "-----insertVoteMainTable invocation succeeded-----" );
+                jsonObject.put( "message", "新增方法成功" );
+                jsonObject.put( "result", result );
+            }
+        }catch (Exception e){
+            jsonObject.put( "message", "<<<<<<新增方法失败" );
+            jsonObject.put( "result",-1 );
+            log.error( "<<<<<<insertVoteMainTable failed" ,e);
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put( "result", result );
-        if (result > 0) {
-            log.info( "-----insertVoteMainTable invocation succeeded-----" );
-            jsonObject.put( "message", "insertVoteMainTable invocation succeeded" );
-            return jsonObject.toJSONString();
         }
-        log.error( "<<<<<<insertVoteMainTable failed" );
-        jsonObject.put( "message", "insertVoteMainTable failed" );
         return jsonObject.toJSONString();
     }
 

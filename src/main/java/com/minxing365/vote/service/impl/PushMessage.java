@@ -26,20 +26,27 @@ public class PushMessage {
     public  static  String mxAccToken =PropertiesUtil.getValue( "mx.accToken" );
     //社区id
     public  static  String networkId =PropertiesUtil.getValue( "network.id");
+    //appid
+    public  static  String appId =PropertiesUtil.getValue( "appId");
 
     /**
      * 推送消息
      *
      * @param title       标题
      * @param description 内容
+     * @param id 主键id
      * @return
      */
-    public static OcuMessageSendResult sendOcuMessageToUsers(String title, String description) {
+    public static OcuMessageSendResult sendOcuMessageToUsers(String title, String description,String id) {
         OcuMessageSendResult result = null;
+          StringBuilder appUrlStr=new StringBuilder( );
+             appUrlStr.append( "launchApp://" ).append( appId ).append( "?id=").append( id );
+            String appUrl=appUrlStr.toString();
+          log.info( "-----appUrl:" +appUrl);
         try {
             AppAccount appAccount = AppAccount.loginByAccessToken( mxDomain, mxAccToken );
             ArticleMessage message = new ArticleMessage();
-            Article article = new Article( title, description, "", null, null );
+            Article article = new Article( title, description, "", null, appUrl );
             message.addArticle( article );
             result = appAccount.sendOcuMessageToUsers( networkId, null, message, ocuID, ocuSecret );
         } catch (MxException e) {
@@ -53,7 +60,7 @@ public class PushMessage {
 
         String title = "异常处理";
         String description = "数据同步异常";
-        sendOcuMessageToUsers( title, description );
+        //sendOcuMessageToUsers( title, description );
         System.out.println( "成功" );
 
     }

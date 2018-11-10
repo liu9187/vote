@@ -31,10 +31,11 @@ public class VoteServiceImpl implements VoteService {
     public Integer insertVoteMainTable(VoteMainTable voteMainTable) {
         //根据id查询主表内容
         //  VoteMainTable voteMainTable=null;
+        Integer re=null;
         try {
             //   voteMainTable= voteMapper.selectVoteMainTableById( id );
             //新增主表
-            Integer re = voteMapper.insertVoteMainTable( voteMainTable );
+             re = voteMapper.insertVoteMainTable( voteMainTable );
             if (re > 0) {
                 log.info( "----新增主表成功----" );
                 String voteTitle = voteMainTable.getVoteTitle();
@@ -46,11 +47,13 @@ public class VoteServiceImpl implements VoteService {
                     log.error( "<<<<<主表发布失败" );
                     return null;
                 }
+                //获取id
+                String id = voteMainTable.getId();
                 if (result > 0) {
                     //状态更新成功，可以发布消息
                     //发布消息接口
                     log.info( "-------消息推送开始" );
-                    Thread thread = new Thread( () -> PushMessage.sendOcuMessageToUsers( voteTitle, "内容" ) );
+                    Thread thread = new Thread( () -> PushMessage.sendOcuMessageToUsers( "投票通知", voteTitle,id ) );
                     thread.start();
                 }
             } else {
@@ -60,7 +63,7 @@ public class VoteServiceImpl implements VoteService {
         } catch (Exception e) {
             log.error( "发布消息出现异常", e );
         }
-        return null;
+        return re;
     }
 
     @Override
@@ -137,7 +140,7 @@ public class VoteServiceImpl implements VoteService {
             String voteTitle = voteMainTable.getVoteTitle();
 
             //发布消息接口
-            Thread thread = new Thread( () -> PushMessage.sendOcuMessageToUsers( voteTitle, "内容" ) );
+            Thread thread = new Thread( () -> PushMessage.sendOcuMessageToUsers( "投票通知", voteTitle ,id) );
             thread.start();
         }
 
@@ -183,7 +186,7 @@ public class VoteServiceImpl implements VoteService {
             List<VoteMainTable> voteList = voteMapper.selectVoteMainTableByCondition( state, createUserNum, voteTitleStr );
             //显示查询页面
 
-            VoteCount voteCount = new VoteCount();
+
             //判断是否有相应的结果
             if (null != voteList && voteList.size() > 0) {
                 //如果有
@@ -192,6 +195,7 @@ public class VoteServiceImpl implements VoteService {
                         log.error( "<<<<<获取主表id为null" );
                         continue;
                     }
+                    VoteCount voteCount = new VoteCount();
                     //主表id
                     String id = voteList.get( i ).getId();
                     //主表主题
@@ -199,7 +203,7 @@ public class VoteServiceImpl implements VoteService {
                     voteCount.setVote( vote );
                     //答案统计列表
                     List<AnswerCount> list = new ArrayList<>();
-                    AnswerCount answerCount = new AnswerCount();
+
                     //根据主表id调用选择表信息
                     //获取选择表信息
                     List<OptionTable> optionList = voteMapper.selectOptionTableByvoteId( id );
@@ -211,6 +215,7 @@ public class VoteServiceImpl implements VoteService {
                             }
                             //根据选择表的信息查询答案表
                             Integer optionId = optionList.get( j ).getId();
+                            AnswerCount answerCount = new AnswerCount();
                             //添加到 list
                             answerCount.setOptionId( optionId );
                             //选择表题目
@@ -254,7 +259,6 @@ public class VoteServiceImpl implements VoteService {
                 voteCount.setVote( voteMainTable.getVoteTitle() );
                 //答案统计列表
                 List<AnswerCount> list = new ArrayList<>();
-                AnswerCount answerCount = new AnswerCount();
                 //根据主表id调用选择表信息
                 //获取选择表信息
                 List<OptionTable> optionList = voteMapper.selectOptionTableByvoteId( id );
@@ -264,6 +268,7 @@ public class VoteServiceImpl implements VoteService {
                             log.error( "<<<<<获取选择表id为null" );
                             continue;
                         }
+                        AnswerCount answerCount = new AnswerCount();
                         //根据选择表的信息查询答案表
                         Integer optionId = optionList.get( j ).getId();
                         //添加到 list选择表id
@@ -281,7 +286,7 @@ public class VoteServiceImpl implements VoteService {
                         //视频添加到视图
                         answerCount.setViewUrl( viewUrl );
                         String remarks = optionList.get( j ).getRemarks();
-                        answerCount.setRemarks(remarks);
+                        answerCount.setRemarks( remarks );
                         //获取答案总条数
                         Integer count = voteMapper.selectCount( optionId );
                         //答案总条数 添加到 list
