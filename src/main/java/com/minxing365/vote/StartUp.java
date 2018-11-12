@@ -1,10 +1,7 @@
 package com.minxing365.vote;
-
 import com.minxing365.dbschema.migrate.MigrateTool;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -19,7 +16,7 @@ public class StartUp {
         if (args != null && args.length > 0 && "update".equals(args[0])){
             //migrate list
             List<String> migrateList = new ArrayList<>();
-           // migrateList.add("2018060701.sql");
+            migrateList.add("2018111201.sql");
             if (migrateList.isEmpty()){
                 return;
             }

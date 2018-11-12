@@ -169,11 +169,27 @@ public class VoteServiceImpl implements VoteService {
         return object.toJSONString();
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     @Override
     @Transactional
     public Integer deleteOptionTableById(Integer id) {
         return voteMapper.deleteOptionTableById( id );
     }
+
+
+    /**
+     * 统计查询
+     * @param state 状态
+     * @param createUserNum 行员号
+     * @param voteTitle 主题
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
 
     @Override
     public List<VoteCount> select(Integer state, String createUserNum, String voteTitle, Integer pageNum, Integer pageSize) {
@@ -185,8 +201,6 @@ public class VoteServiceImpl implements VoteService {
             PageHelper.startPage( pageNum, pageSize );
             List<VoteMainTable> voteList = voteMapper.selectVoteMainTableByCondition( state, createUserNum, voteTitleStr );
             //显示查询页面
-
-
             //判断是否有相应的结果
             if (null != voteList && voteList.size() > 0) {
                 //如果有
@@ -201,6 +215,12 @@ public class VoteServiceImpl implements VoteService {
                     //主表主题
                     String vote = voteList.get( i ).getVoteTitle();
                     voteCount.setVote( vote );
+                    //描述
+                    String describes=  voteList.get( i ).getDescribes();
+                     voteCount.setDescribes(describes);
+                    //主表备注
+                    String remarks1=voteList.get( i ).getRemarks();
+                    voteCount.setRemarks(remarks1);
                     //答案统计列表
                     List<AnswerCount> list = new ArrayList<>();
 
@@ -222,6 +242,17 @@ public class VoteServiceImpl implements VoteService {
                             String optiontile = optionList.get( j ).getOptionTitle();
                             //添加到 list 选择表题目
                             answerCount.setOptiontile( optiontile );
+                            //获取选择表图片路径
+                            String pictureUrl = optionList.get( j ).getPictureUrl();
+                            //添加视频路径到视图
+                            answerCount.setPictureUrl( pictureUrl );
+                            //获取视频路径
+                            String viewUrl = optionList.get( j ).getViewUrl();
+                            //视频添加到视图
+                            answerCount.setViewUrl( viewUrl );
+                            //选择表备注
+                            String remarks = optionList.get( j ).getRemarks();
+                            answerCount.setRemarks( remarks );
                             //获取答案总条数
                             Integer count = voteMapper.selectCount( optionId );
                             //答案总条数 添加到 list
@@ -256,7 +287,25 @@ public class VoteServiceImpl implements VoteService {
             //如果 查询非空
             if (null != voteMainTable) {
                 //主表标题
-                voteCount.setVote( voteMainTable.getVoteTitle() );
+                  if (null !=voteMainTable.getVoteTitle()){
+                      voteCount.setVote( voteMainTable.getVoteTitle() );
+                }else {
+                      voteCount.setVote("");
+                  }
+                //描述
+                if (null !=voteMainTable.getDescribes()){
+                    String describes=voteMainTable.getDescribes();
+                    voteCount.setDescribes(describes);
+                }else {
+                    voteCount.setDescribes("");
+                }
+                //主表备注
+                if (null !=voteMainTable.getRemarks()){
+                    String remarks1=voteMainTable.getRemarks();
+                    voteCount.setRemarks(remarks1);
+                }else {
+                    voteCount.setRemarks("");
+                }
                 //答案统计列表
                 List<AnswerCount> list = new ArrayList<>();
                 //根据主表id调用选择表信息
@@ -285,6 +334,7 @@ public class VoteServiceImpl implements VoteService {
                         String viewUrl = optionList.get( j ).getViewUrl();
                         //视频添加到视图
                         answerCount.setViewUrl( viewUrl );
+                        //选择表备注
                         String remarks = optionList.get( j ).getRemarks();
                         answerCount.setRemarks( remarks );
                         //获取答案总条数

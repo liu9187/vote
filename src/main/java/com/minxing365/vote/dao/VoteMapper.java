@@ -20,7 +20,8 @@ public interface VoteMapper {
      * @param voteMainTable
      * @return
      */
-    @Insert("INSERT INTO vote_main_table (\n" + "\tid,\n" + "\tvote_title,\n" + "\tcreate_user_num,\n" + "\tcreate_user_name,\n" + "\tend_time,\n" + "\tstate\n" + ")\n" + "VALUES\n" + "\t(#{id}, #{voteTitle},#{createUserNum},#{createUserName},#{endTime},#{state})")
+    @Insert("INSERT INTO vote_main_table (id,vote_title,create_user_num,create_user_name,end_time,state,remarks ,describes)"+
+            "VALUES" + "(#{id}, #{voteTitle},#{createUserNum},#{createUserName},#{endTime},#{state},#{remarks},#{describes})")
     Integer insertVoteMainTable(VoteMainTable voteMainTable);
 
     /**
