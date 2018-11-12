@@ -518,7 +518,7 @@ public class VoteController {
     }
 
     /**
-     * app 查询
+     * app 查询ee
      * @param optionTitle 选择表 主题
      * @param pageNum 起始页
      * @param pageSize 每页条数
@@ -535,6 +535,22 @@ public class VoteController {
            }
 
         return result;
+      }
+      @RequestMapping(value = "/getCount", method = {RequestMethod.GET})
+      public String getCount(@RequestParam(defaultValue = "") String userNum, @RequestParam(defaultValue = "") String voteId){
+              log.info("getCount parameter:userNum="+userNum+"; voteId="+voteId);
+                JSONObject object=new JSONObject();
+              Integer sum=null;
+              try {
+               sum=   voteService.getCount(userNum,voteId);
+                  object.put("sum",sum);
+                  object.put("message","获取信息成功");
+              }catch (Exception e){
+                  log.error("<<<<<<getCount 失败",e);
+
+              }
+
+           return object.toJSONString();
       }
 
     /**
