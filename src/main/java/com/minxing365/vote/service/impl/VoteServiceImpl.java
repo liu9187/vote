@@ -32,11 +32,11 @@ public class VoteServiceImpl implements VoteService {
     public Integer insertVoteMainTable(VoteMainTable voteMainTable) {
         //根据id查询主表内容
         //  VoteMainTable voteMainTable=null;
-        Integer re=null;
+        Integer re = null;
         try {
             //   voteMainTable= voteMapper.selectVoteMainTableById( id );
             //新增主表
-             re = voteMapper.insertVoteMainTable( voteMainTable );
+            re = voteMapper.insertVoteMainTable( voteMainTable );
             if (re > 0) {
                 log.info( "----新增主表成功----" );
                 String voteTitle = voteMainTable.getVoteTitle();
@@ -54,7 +54,7 @@ public class VoteServiceImpl implements VoteService {
                     //状态更新成功，可以发布消息
                     //发布消息接口
                     log.info( "-------消息推送开始" );
-                    Thread thread = new Thread( () -> PushMessage.sendOcuMessageToUsers( "投票通知", voteTitle,id ) );
+                    Thread thread = new Thread( () -> PushMessage.sendOcuMessageToUsers( "投票通知", voteTitle, id ) );
                     thread.start();
                 }
             } else {
@@ -141,7 +141,7 @@ public class VoteServiceImpl implements VoteService {
             String voteTitle = voteMainTable.getVoteTitle();
 
             //发布消息接口
-            Thread thread = new Thread( () -> PushMessage.sendOcuMessageToUsers( "投票通知", voteTitle ,id) );
+            Thread thread = new Thread( () -> PushMessage.sendOcuMessageToUsers( "投票通知", voteTitle, id ) );
             thread.start();
         }
 
@@ -430,6 +430,33 @@ public class VoteServiceImpl implements VoteService {
         //分页插件
         PageHelper.startPage( pageNum, pageSize );
         return voteMapper.selectVoteMainTable();
+    }
+
+    @Override
+    public Integer getCount(String userNum, String voteId) {
+          Integer sum=0;
+       try {
+           List<Integer> opIdList = voteMapper.selectOpIdByVoteIdAnduserNum(voteId);
+              if (opIdList.size()>0){
+                    for (int i=0;i<opIdList.size();i++){
+                           if (null !=opIdList.get( i )){
+                               Integer count=  voteMapper.getAnswerCount(userNum, opIdList.get( i ));
+                                 log.info( "----第"+i+"次加入到总条数-----" );
+                                sum+=count;
+                           }else {
+                                 log.error( "<<<<<<数据异常" );
+                               return  null;
+                           }
+                    }
+              }else {
+                  //没有查询到 选择表
+                    return  sum;
+              }
+       }catch (Exception e){
+              log.error( "<<<<<<<验证用户投票接口异常" ,e);
+       }
+       log.info( "--------用户投票总条数" );
+        return sum;
     }
 
 

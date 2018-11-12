@@ -83,6 +83,7 @@ public interface VoteMapper {
 
     /**
      * 首页查询列表
+     *
      * @return
      */
     @Select("SELECT id,vote_title AS voteTitle,create_user_name AS createUserName,create_user_num AS createUserNum,end_time AS endTime,state  FROM vote_main_table  ")
@@ -182,6 +183,24 @@ public interface VoteMapper {
      */
     @Select("SELECT COUNT(id)  FROM  answer_table WHERE option_id=#{optionId}")
     Integer selectCount(@Param("optionId") Integer optionId);
+
+    /**
+     * 验证用户投票条数——根据行员号和主表id查询选择表id
+     *
+     * @param voteId
+     * @return
+     */
+    @Select("SELECT  o.id  FROM  vote_main_table v LEFT JOIN option_table o ON o.vote_id =v.id WHERE  v.id=#{voteId} GROUP BY o.id")
+    List<Integer> selectOpIdByVoteIdAnduserNum( @Param("voteId") String voteId);
+
+    /**
+     * 验证用户投票条数——根据行员号查询答案表条数
+     *
+     * @param userNum
+     * @return
+     */
+    @Select(" SELECT COUNT(a.id) AS count  FROM  option_table o  LEFT JOIN answer_table a ON a.option_id=o.id WHERE   a.option_title=#{userNum} AND o.id=#{opId}")
+    Integer getAnswerCount(@Param("userNum") String userNum, @Param("opId") Integer opId);
 
     class IntegralSqlBuilder {
         Logger logger = LoggerFactory.getLogger( IntegralSqlBuilder.class );
