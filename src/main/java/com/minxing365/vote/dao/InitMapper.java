@@ -16,13 +16,15 @@ public interface InitMapper {
     /**
      * 初始化主表
      */
-    @Select( "CREATE TABLE vote_main_table(\n"
-            + "id VARCHAR(255)  COMMENT '主表id',\n" +
-            "vote_title VARCHAR(255) COMMENT '主题',\n" +
-            "create_user_num VARCHAR(255)  COMMENT '创建人工号',\n" +
-            "create_user_name  VARCHAR(255) COMMENT '创建人名称',\n" +
-            "create_time  timestamp   DEFAULT CURRENT_TIMESTAMP   COMMENT '创建时间',\n" +
-            "end_time bigint COMMENT '结束时间',\n" + "state int COMMENT '状态  1 未发布 2 已发布 3 已删除 4 已结束' \n" + "\n" + ")" )
+    @Select( "CREATE TABLE vote_main_table(\n" +
+            "            id VARCHAR(255)  COMMENT '主表id',\n" +
+            "            vote_title VARCHAR(255) COMMENT '主题', \n" +
+            "            create_user_num VARCHAR(255)  COMMENT '创建人工号', \n" +
+            "            create_user_name  VARCHAR(255) COMMENT '创建人名称',\n" +
+            "            create_time  timestamp   DEFAULT CURRENT_TIMESTAMP   COMMENT '创建时间',\n" +
+            "            describes VARCHAR(255) COMMENT  '描述' ,\n" +
+            "            remarks VARCHAR(255) COMMENT '备注' ,\n" +
+            "            end_time bigint COMMENT '结束时间',state int COMMENT '状态  1 未发布 2 已发布 3 已删除 4 已结束' )" )
     void initVote();
 
     /**

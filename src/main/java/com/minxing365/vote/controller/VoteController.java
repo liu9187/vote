@@ -1,4 +1,5 @@
 package com.minxing365.vote.controller;
+
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.minxing365.vote.bean.AnswerTable;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import tools.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,11 +27,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v2/vote")
 public class VoteController {
-    Logger log = LoggerFactory.getLogger( VoteController.class );
+    Logger log = LoggerFactory.getLogger(VoteController.class);
 
     @Autowired
     private VoteService voteService;
-    @Value( "${img.location}" )
+    @Value("${img.location}")
     private String location;
 
     /**
@@ -43,36 +43,45 @@ public class VoteController {
      * @param endTime
      * @return
      */
-    @RequestMapping(value= "/insertVoteMainTable", method = {RequestMethod.GET})
-    public String insertVoteMainTable(@RequestParam String id, @RequestParam String voteTitle, @RequestParam String createUserNum, @RequestParam String createUserName, @RequestParam Long endTime) {
-             log.info( "insertVoteMainTable parameter : id="+id+" ; createUserNum=" +createUserNum+"; createUserName"+createUserName+"; endTime"+endTime);
+    @RequestMapping(value = "/insertVoteMainTable", method = {RequestMethod.GET})
+    public String insertVoteMainTable(@RequestParam String id,
+                                      @RequestParam String voteTitle,
+                                      @RequestParam String createUserNum,
+                                      @RequestParam String createUserName,
+                                      @RequestParam String describes,
+                                      @RequestParam String remarks,
+                                      @RequestParam Long endTime
+    ) {
+        log.info("insertVoteMainTable parameter : id=" + id + " ; createUserNum=" + createUserNum + "; createUserName" + createUserName + "; endTime" + endTime + ";describes:" + describes + ";remarks:" + remarks+";voteTitle:"+voteTitle);
         JSONObject jsonObject = new JSONObject();
 
-        if (null ==endTime || null ==id|| null ==voteTitle || null ==createUserName ||
-                "".equals( "voteTitle" )||"".equals( "createUserNum" )||"".equals( "createUserName" )){
-            jsonObject.put( "message","参数错误" );
-            log.error( "<<<<<<<<<parameter error " );
+        if (null == endTime || null == id || null == voteTitle || null == createUserName || null == describes || null == remarks ||
+                "".equals(voteTitle) || "".equals(createUserNum) || "".equals(createUserName) || "".equals(describes) || "".equals(remarks)) {
+            jsonObject.put("message", "参数错误");
+            log.error("<<<<<<<<<parameter error ");
             return jsonObject.toJSONString();
 
         }
         VoteMainTable voteMainTable = new VoteMainTable();
-        voteMainTable.setId( id );
-        voteMainTable.setVoteTitle( voteTitle );
-        voteMainTable.setCreateUserName( createUserName );
-        voteMainTable.setCreateUserNum( createUserNum );
-        voteMainTable.setEndTime( endTime );
-        voteMainTable.setState( 1 );
+        voteMainTable.setId(id);
+        voteMainTable.setVoteTitle(voteTitle);
+        voteMainTable.setCreateUserName(createUserName);
+        voteMainTable.setCreateUserNum(createUserNum);
+        voteMainTable.setEndTime(endTime);
+        voteMainTable.setDescribes(describes);
+        voteMainTable.setRemarks(remarks);
+        voteMainTable.setState(1);
         try {
-            Integer result = voteService.insertVoteMainTable( voteMainTable );
-            if (null != result && result>0){
-                log.info( "-----insertVoteMainTable invocation succeeded-----" );
-                jsonObject.put( "message", "新增方法成功" );
-                jsonObject.put( "result", result );
+            Integer result = voteService.insertVoteMainTable(voteMainTable);
+            if (null != result && result > 0) {
+                log.info("-----insertVoteMainTable : result----"+result);
+                jsonObject.put("message", "新增方法成功");
+                jsonObject.put("result", result);
             }
-        }catch (Exception e){
-            jsonObject.put( "message", "<<<<<<新增方法失败" );
-            jsonObject.put( "result",-1 );
-            log.error( "<<<<<<insertVoteMainTable failed" ,e);
+        } catch (Exception e) {
+            jsonObject.put("message", "<<<<<<新增方法失败");
+            jsonObject.put("result", -1);
+            log.error("<<<<<<insertVoteMainTable failed", e);
 
         }
         return jsonObject.toJSONString();
@@ -86,53 +95,53 @@ public class VoteController {
      */
     @RequestMapping(value = "/insertOptionTable", method = {RequestMethod.POST})
     public String insertOptionTable(@RequestBody OptionTable optionTable) {
-        log.info( "-----" + optionTable.getOptionTitle() + "----" + optionTable.getRemarks() + "-----" + optionTable.getViewUrl() + "----" + optionTable.getVoteId() + "---" + optionTable.getOptionFlag() );
-        Integer id = voteService.insertOptionTable( optionTable );
+        log.info("-----" + optionTable.getOptionTitle() + "----" + optionTable.getRemarks() + "-----" + optionTable.getViewUrl() + "----" + optionTable.getVoteId() + "---" + optionTable.getOptionFlag());
+        Integer id = voteService.insertOptionTable(optionTable);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put( "id", id );
+        jsonObject.put("id", id);
         if (id > 0) {
-            log.info( "-----insertOptionTable invocation succeeded-----" );
-            jsonObject.put( "message", "insertOptionTable invocation succeeded" );
+            log.info("-----insertOptionTable invocation succeeded-----");
+            jsonObject.put("message", "insertOptionTable invocation succeeded");
             return jsonObject.toJSONString();
         }
-        log.error( "<<<<<<insertOptionTable failed" );
-        jsonObject.put( "message", "insertOptionTable failed" );
+        log.error("<<<<<<insertOptionTable failed");
+        jsonObject.put("message", "insertOptionTable failed");
         return jsonObject.toJSONString();
     }
 
     /**
-     * 保存答案表 手机端
+     * 保存答案表
      *
      * @param answerTable
      * @return
      */
     @RequestMapping(value = "/insertAnswerTable", method = {RequestMethod.POST})
-    public String insertAnswerTable(AnswerTable answerTable) {
+    public String insertAnswerTable( AnswerTable answerTable) {
         JSONObject jsonObject = new JSONObject();
-        Integer id = voteService.insertAnswerTable( answerTable );
-        jsonObject.put( "id", id );
+        Integer id = voteService.insertAnswerTable(answerTable);
+        jsonObject.put("id", id);
         if (id > 0) {
-            jsonObject.put( "message", "insertAnswerTable invocation succeeded" );
-            log.info( "-------insertAnswerTable invocation succeeded" );
+            jsonObject.put("message", "insertAnswerTable invocation succeeded");
+            log.info("-------insertAnswerTable invocation succeeded");
             return jsonObject.toJSONString();
         }
-        jsonObject.put( "message", "insertAnswerTable failed" );
-        log.error( "<<<<<<<insertAnswerTable failed" );
+        jsonObject.put("message", "insertAnswerTable failed");
+        log.error("<<<<<<<insertAnswerTable failed");
         return jsonObject.toJSONString();
     }
 
     @RequestMapping(value = "/selectVoteAndOption", method = {RequestMethod.GET})
     public String selectVoteAndOption(@RequestParam(defaultValue = "") String id) {
         JSONObject jsonObject = new JSONObject();
-        List<VoteAndOption> result = voteService.selectVoteAndOption( id );
-        jsonObject.put( "list", result );
+        List<VoteAndOption> result = voteService.selectVoteAndOption(id);
+        jsonObject.put("list", result);
         if (result.size() > 0) {
-            jsonObject.put( "message", "selectVoteAndOption  invocation succeeded" );
-            log.info( "-------selectVoteAndOption  invocation succeeded" );
+            jsonObject.put("message", "selectVoteAndOption  invocation succeeded");
+            log.info("-------selectVoteAndOption  invocation succeeded");
             return jsonObject.toJSONString();
         }
-        jsonObject.put( "message", "selectVoteAndOption  invocation failed" );
-        log.info( "-------selectVoteAndOption  invocation failed" );
+        jsonObject.put("message", "selectVoteAndOption  invocation failed");
+        log.info("-------selectVoteAndOption  invocation failed");
         return jsonObject.toJSONString();
     }
 
@@ -146,16 +155,16 @@ public class VoteController {
     @RequestMapping(value = "/selectAnswer", method = {RequestMethod.GET})
     public String selectAnswer(@RequestParam String id, @RequestParam String optionTitle) {
         JSONObject jsonObject = new JSONObject();
-        AnswerTable result = voteService.selectAnswer( id, optionTitle );
-        jsonObject.put( "result", result );
+        AnswerTable result = voteService.selectAnswer(id, optionTitle);
+        jsonObject.put("result", result);
         if (null == result) {
-            jsonObject.put( "message", "查询人员没有投票记录" );
-            jsonObject.put( "result", null );
-            log.info( "------no voting  record------" );
+            jsonObject.put("message", "查询人员没有投票记录");
+            jsonObject.put("result", null);
+            log.info("------no voting  record------");
             return jsonObject.toJSONString();
         }
-        jsonObject.put( "result", result );
-        jsonObject.put( "message", "已经投票，不能重复投票" );
+        jsonObject.put("result", result);
+        jsonObject.put("message", "已经投票，不能重复投票");
         return jsonObject.toJSONString();
     }
 
@@ -169,21 +178,21 @@ public class VoteController {
     public String selectOptionTableById(@RequestParam Integer id) {
         JSONObject jsonObject = new JSONObject();
         if (null == id) {
-            log.error( "<<<<<<parameter error" );
-            jsonObject.put( "message", "参数传入错误" );
-            jsonObject.put( "result", -1 );
+            log.error("<<<<<<parameter error");
+            jsonObject.put("message", "参数传入错误");
+            jsonObject.put("result", -1);
             return jsonObject.toJSONString();
         }
-        OptionTable result = voteService.selectOptionTableById( id );
+        OptionTable result = voteService.selectOptionTableById(id);
         if (null == result) {
-            log.error( "<<<<<<selectOptionTableById  invocation failed" );
-            jsonObject.put( "message", "selectOptionTableById 调用失败" );
-            jsonObject.put( "result", null );
+            log.error("<<<<<<selectOptionTableById  invocation failed");
+            jsonObject.put("message", "selectOptionTableById 调用失败");
+            jsonObject.put("result", null);
             return jsonObject.toJSONString();
         }
-        log.info( "------selectOptionTableById  invocation succeeded" );
-        jsonObject.put( "message", "selectOptionTableById 调用成功" );
-        jsonObject.put( "result", result );
+        log.info("------selectOptionTableById  invocation succeeded");
+        jsonObject.put("message", "selectOptionTableById 调用成功");
+        jsonObject.put("result", result);
         return jsonObject.toJSONString();
     }
 
@@ -196,22 +205,22 @@ public class VoteController {
     @RequestMapping(value = "/selectOptionTableByvoteId", method = {RequestMethod.GET})
     public String selectOptionTableByvoteId(@RequestParam(defaultValue = "") String voteId) {
         JSONObject jsonObject = new JSONObject();
-        if ("".equals( voteId )) {
-            log.error( "<<<<<<parameter error" );
-            jsonObject.put( "message", "参数传入错误" );
-            jsonObject.put( "result", -1 );
+        if ("".equals(voteId)) {
+            log.error("<<<<<<parameter error");
+            jsonObject.put("message", "参数传入错误");
+            jsonObject.put("result", -1);
             return jsonObject.toJSONString();
         }
-        List<OptionTable> list = voteService.selectOptionTableByvoteId( voteId );
+        List<OptionTable> list = voteService.selectOptionTableByvoteId(voteId);
         if (list.size() > 0) {
-            log.info( "-------selectOptionTableByvoteId  invocation succeeded" );
-            jsonObject.put( "message", "selectOptionTableByvoteId 调用成功" );
-            jsonObject.put( "list", list );
+            log.info("-------selectOptionTableByvoteId  invocation succeeded");
+            jsonObject.put("message", "selectOptionTableByvoteId 调用成功");
+            jsonObject.put("list", list);
             return jsonObject.toJSONString();
         }
-        log.info( "<<<<selectOptionTableByvoteId  invocation failed" );
-        jsonObject.put( "message", "selectOptionTableByvoteId 调用失败" );
-        jsonObject.put( "list", list );
+        log.info("<<<<selectOptionTableByvoteId  invocation failed");
+        jsonObject.put("message", "selectOptionTableByvoteId 调用失败");
+        jsonObject.put("list", list);
         return jsonObject.toJSONString();
     }
 
@@ -224,47 +233,47 @@ public class VoteController {
     public String getId() {
         JSONObject jsonObject = new JSONObject();
         String id = voteService.getId();
-        jsonObject.put( "id", id );
-        if (null == id || "".equals( id )) {
-            log.info( "------getId invocation failed" );
-            jsonObject.put( "message", "获取id失败" );
+        jsonObject.put("id", id);
+        if (null == id || "".equals(id)) {
+            log.info("------getId invocation failed");
+            jsonObject.put("message", "获取id失败");
         }
-        log.info( "------getId invocation succeeded " );
-        jsonObject.put( "message", "获取id成功" );
+        log.info("------getId invocation succeeded ");
+        jsonObject.put("message", "获取id成功");
         return jsonObject.toJSONString();
     }
 
     /**
      * 根据主键id修改主表
      *
-     * @param voteTitle
-     * @param endTime
+     * @param voteTitle 主题
+     * @param endTime 结束时间
      * @param id
      * @return
      */
     @RequestMapping(value = "/updateVoteMainTable", method = {RequestMethod.PUT})
     public String updateVoteMainTable(@RequestParam(defaultValue = "", required = false) String voteTitle, @RequestParam(required = false) Long endTime, @RequestParam String id) {
         JSONObject jsonObject = new JSONObject();
-        if (!JnbEsbUtil.isInteger( id )) {
-            jsonObject.put( "message", "<<<<<<parameter error" );
+        if (!JnbEsbUtil.isInteger(id)) {
+            jsonObject.put("message", "<<<<<<parameter error");
             return jsonObject.toJSONString();
         }
         Integer result = 0;
         try {
-            result = voteService.updateVoteMainTable( voteTitle, endTime, id );
+            result = voteService.updateVoteMainTable(voteTitle, endTime, id);
             if (result > 0) {
-                log.error( "------updateVoteMainTable Updated data." );
-                jsonObject.put( "message", "有数据更新" );
+                log.error("------updateVoteMainTable Updated data.");
+                jsonObject.put("message", "有数据更新");
             } else {
-                log.error( "------updateVoteMainTable no updated data." );
-                jsonObject.put( "message", "没有数据更新" );
+                log.error("------updateVoteMainTable no updated data.");
+                jsonObject.put("message", "没有数据更新");
             }
         } catch (Exception e) {
-            log.error( "<<<<<<<updateVoteMainTable invocation failed", e );
-            jsonObject.put( "message", "根据主键id修改主表失败" );
+            log.error("<<<<<<<updateVoteMainTable invocation failed", e);
+            jsonObject.put("message", "根据主键id修改主表失败");
         }
 
-        jsonObject.put( "result", result );
+        jsonObject.put("result", result);
         return jsonObject.toJSONString();
     }
 
@@ -283,36 +292,36 @@ public class VoteController {
     public String updateOptionTable(@RequestParam(required = false) String optionTitle, @RequestParam(required = false) String pictureUrl, @RequestParam(required = false) String viewUrl, @RequestParam(required = false) Integer optionFlag, @RequestParam(required = false) String remarks, @RequestParam Integer id) {
         JSONObject jsonObject = new JSONObject();
         if (null == id) {
-            jsonObject.put( "message", "<<<<<<id parameter null" );
+            jsonObject.put("message", "<<<<<<id parameter null");
             return jsonObject.toJSONString();
         }
-        if ("".equals( optionTitle )) {
+        if ("".equals(optionTitle)) {
             optionTitle = null;
         }
-        if ("".equals( pictureUrl )) {
+        if ("".equals(pictureUrl)) {
             pictureUrl = null;
         }
-        if ("".equals( viewUrl )) {
+        if ("".equals(viewUrl)) {
             viewUrl = null;
         }
-        if ("".equals( remarks )) {
+        if ("".equals(remarks)) {
             remarks = null;
         }
         Integer result = 0;
         try {
-            result = voteService.updateOptionTable( optionTitle, pictureUrl, viewUrl, optionFlag, remarks, id );
+            result = voteService.updateOptionTable(optionTitle, pictureUrl, viewUrl, optionFlag, remarks, id);
             if (result > 0) {
-                log.error( "------Updated data." );
-                jsonObject.put( "message", "有数据更新" );
+                log.error("------Updated data.");
+                jsonObject.put("message", "有数据更新");
             } else {
-                log.error( "------No updated data." );
-                jsonObject.put( "message", "没有数据更新" );
+                log.error("------No updated data.");
+                jsonObject.put("message", "没有数据更新");
             }
         } catch (Exception e) {
-            log.error( "<<<<<<<updateVoteMainTable invocation failed", e );
-            jsonObject.put( "message", "根据选择表id修改主表失败" );
+            log.error("<<<<<<<updateVoteMainTable invocation failed", e);
+            jsonObject.put("message", "根据选择表id修改主表失败");
         }
-        jsonObject.put( "result", result );
+        jsonObject.put("result", result);
         return jsonObject.toJSONString();
     }
 
@@ -327,19 +336,19 @@ public class VoteController {
         JSONObject jsonObject = new JSONObject();
         Integer result = 0;
         try {
-            result = voteService.updateState( id );
+            result = voteService.updateState(id);
             if (result > 0) {
-                log.error( "------publishVote Updated data." );
-                jsonObject.put( "message", "有数据更新" );
+                log.error("------publishVote Updated data.");
+                jsonObject.put("message", "有数据更新");
             } else {
-                log.error( "------publishVote No updated data." );
-                jsonObject.put( "message", "没有数据更新" );
+                log.error("------publishVote No updated data.");
+                jsonObject.put("message", "没有数据更新");
             }
         } catch (Exception e) {
-            log.error( "<<<<<publishVote filed", e );
-            jsonObject.put( "message", "发布信息失败" );
+            log.error("<<<<<publishVote filed", e);
+            jsonObject.put("message", "发布信息失败");
         }
-        jsonObject.put( "result", result );
+        jsonObject.put("result", result);
         return jsonObject.toJSONString();
     }
 
@@ -352,16 +361,16 @@ public class VoteController {
     @RequestMapping(value = "/deleteVote", method = {RequestMethod.DELETE})
     public String deleteVote(@RequestParam String id) {
         JSONObject object = new JSONObject();
-        if (!JnbEsbUtil.isInteger( id )) {
-            object.put( "message", "id 类型错误" );
-            log.error( "<<<<<<parameter error,id==" + id );
+        if (!JnbEsbUtil.isInteger(id)) {
+            object.put("message", "id 类型错误");
+            log.error("<<<<<<parameter error,id==" + id);
             return object.toJSONString();
         }
         String result = null;
         try {
-            result = voteService.deleteVote( id );
+            result = voteService.deleteVote(id);
         } catch (Exception e) {
-            log.error( "deleteVote 失败", e );
+            log.error("deleteVote 失败", e);
         }
 
         return result;
@@ -378,22 +387,22 @@ public class VoteController {
         JSONObject object = new JSONObject();
         Integer result = null;
         if (null == id) {
-            object.put( "message", "参数错误" );
-            object.put( "result", "null" );
-            log.error( "<<<<<<<parameter error" );
+            object.put("message", "参数错误");
+            object.put("result", "null");
+            log.error("<<<<<<<parameter error");
         }
         try {
-            result = voteService.deleteOptionTableById( id );
+            result = voteService.deleteOptionTableById(id);
             if (result > 0) {
-                object.put( "message", "删除成功" );
-                object.put( "result", result );
+                object.put("message", "删除成功");
+                object.put("result", result);
             } else {
-                object.put( "message", "删除数据不存在" );
-                object.put( "result", result );
+                object.put("message", "删除数据不存在");
+                object.put("result", result);
             }
-            log.info( "<<<<<<<deleteOptionTableById 操作成功" );
+            log.info("<<<<<<<deleteOptionTableById 操作成功");
         } catch (Exception e) {
-            log.error( "<<<<<<deleteOptionTableById 操作异常", e );
+            log.error("<<<<<<deleteOptionTableById 操作异常", e);
         }
 
         return object.toJSONString();
@@ -409,24 +418,24 @@ public class VoteController {
     public String selectVoteMainTableById(@RequestParam String id) {
         JSONObject object = new JSONObject();
         //判断id 是否为数字和不为null
-        if (!JnbEsbUtil.isInteger( id )) {
-            object.put( "message", "参数传入错误" );
-            log.error( "<<<<<parameter error" );
+        if (!JnbEsbUtil.isInteger(id)) {
+            object.put("message", "参数传入错误");
+            log.error("<<<<<parameter error");
             return object.toJSONString();
         }
         try {
-            VoteMainTable voteMainTable = voteService.selectVoteMainTableById( id );
+            VoteMainTable voteMainTable = voteService.selectVoteMainTableById(id);
             if (null != voteMainTable) {
-                log.info( "message", "查询消息成功" );
-                object.put( "message", "查询消息成功" );
-                object.put( "voteMainTable", voteMainTable );
+                log.info("message", "查询消息成功");
+                object.put("message", "查询消息成功");
+                object.put("voteMainTable", voteMainTable);
             } else {
-                log.info( "message", "查询消息失败" );
-                object.put( "message", "查询消息失败" );
-                object.put( "voteMainTable", "null" );
+                log.info("message", "查询消息失败");
+                object.put("message", "查询消息失败");
+                object.put("voteMainTable", "null");
             }
         } catch (Exception e) {
-            log.error( "selectVoteMainTableById 方法错误", e );
+            log.error("selectVoteMainTableById 方法错误", e);
         }
 
         return object.toJSONString();
@@ -443,94 +452,68 @@ public class VoteController {
     public String selectVoteMainTable(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize) {
         JSONObject jsonObject = new JSONObject();
         try {
-            List<VoteMainTable> list = voteService.selectVoteMainTable( pageNum, pageSize );
-            PageInfo<VoteMainTable> page = new PageInfo( list );
+            List<VoteMainTable> list = voteService.selectVoteMainTable(pageNum, pageSize);
+            PageInfo<VoteMainTable> page = new PageInfo(list);
 
-            jsonObject.put( "list", list );
+            jsonObject.put("list", list);
             //总页数
-            jsonObject.put( "pages", page.getPages() );
+            jsonObject.put("pages", page.getPages());
             //总记录数
-            jsonObject.put( "total", page.getTotal() );
+            jsonObject.put("total", page.getTotal());
         } catch (Exception e) {
-            log.error( "<<<<<selectVoteMainTable 调用失败", e );
+            log.error("<<<<<selectVoteMainTable 调用失败", e);
         }
         return jsonObject.toJSONString();
     }
 
     /**
      * 投票信息查询
-     * @param state 发布状态
+     *
+     * @param state         发布状态
      * @param createUserNum 行员号
-     * @param voteTitle 主题
-     * @param pageNum 起始页
-     * @param pageSize 每页显示条数
+     * @param voteTitle     主题
+     * @param pageNum       起始页
+     * @param pageSize      每页显示条数
      * @return
      */
     @RequestMapping(value = "/select", method = {RequestMethod.GET})
     public String select(@RequestParam Integer state, @RequestParam String createUserNum, @RequestParam String voteTitle, @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize) {
         JSONObject jsonObject = new JSONObject();
         try {
-            List<VoteCount> list = voteService.select( state, createUserNum, voteTitle, pageNum, pageSize );
-            PageInfo<VoteMainTable> page = new PageInfo( list );
-            jsonObject.put( "list",list );
+            List<VoteCount> list = voteService.select(state, createUserNum, voteTitle, pageNum, pageSize);
+            PageInfo<VoteMainTable> page = new PageInfo(list);
+            jsonObject.put("list", list);
             //总页数
-            jsonObject.put( "pages", page.getPages() );
+            jsonObject.put("pages", page.getPages());
             //总记录数
-            jsonObject.put( "total", page.getTotal() );
-          //  jsonObject.put( "message","查询成功" );
-            log.info( "-------select invocation succeeded" );
+            jsonObject.put("total", page.getTotal());
+            //  jsonObject.put( "message","查询成功" );
+            log.info("-------select invocation succeeded");
         } catch (Exception e) {
-              jsonObject.put( "message","select接口调用异常" );
-            log.info( "-------select invocation failed" ,e);
+            jsonObject.put("message", "select接口调用异常");
+            log.info("-------select invocation failed", e);
         }
         return jsonObject.toJSONString();
     }
 
     /**
      * app页面显示
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "/selectOne", method = {RequestMethod.GET})
-    public String selectOne(@RequestParam String id){
+    public String selectOne(@RequestParam String id) {
         JSONObject jsonObject = new JSONObject();
         try {
-            VoteCount voteCount=   voteService.selectOne( id );
-              jsonObject.put( "voteCount",voteCount );
-              jsonObject.put( "message","查询成功" );
-
-        }catch (Exception e){
-            jsonObject.put( "message","selectOne接口调用异常" );
-            log.info( "-------selectOne invocation failed" ,e);
+            VoteCount voteCount = voteService.selectOne(id);
+            jsonObject.put("voteCount", voteCount);
+            jsonObject.put("message", "查询成功");
+            log.info("------selectOne 返回结果 voteCount："+voteCount+" ; message:查询成功");
+        } catch (Exception e) {
+            jsonObject.put("message", "selectOne接口调用异常");
+            log.info("-------selectOne invocation failed", e);
         }
-        return  jsonObject.toJSONString();
-    }
-
-    /**
-     * 验证用户投票次数
-     * @param userNum
-     * @param voteId
-     * @return
-     */
-    @RequestMapping(value = "/getCount", method = {RequestMethod.GET})
-    public  String getCount(@RequestParam String userNum,@RequestParam String voteId){
-          log.info( "------验证用户投票次数 参数：userNum =="+userNum+" ; voteId=="+voteId );
-        JSONObject jsonObject = new JSONObject();
-        Integer sum=0;
-        try {
-            sum=   voteService.getCount( userNum,voteId );
-           if (null==sum){
-               jsonObject.put( "message","投票次数查询错误" );
-               jsonObject.put( "sum",-1 );
-           }
-
-        }catch (Exception e){
-            jsonObject.put( "message","投票次数查询错误" );
-            jsonObject.put( "sum",-1 );
-            log.error( "<<<<<<<<<投票次数查询错误" ,e);
-        }
-        jsonObject.put( "message","投票次数查询成功" );
-        jsonObject.put( "sum",sum );
         return jsonObject.toJSONString();
     }
 
@@ -542,12 +525,12 @@ public class VoteController {
     public JSONObject upload(MultipartFile pic, HttpServletRequest request, HttpServletResponse response) throws Exception {
         JSONObject result = new JSONObject();
         File directory = new File("");// 参数为空
-        String imgPath = directory.getCanonicalPath()+File.separator+"img"+File.separator;
-           log.info( "------"+imgPath +"-------");
+        String imgPath = directory.getCanonicalPath() + File.separator + "img" + File.separator;
+        log.info("------" + imgPath + "-------");
         if (pic == null || pic.getSize() == 0) {
-             log.error( "<<<<<<<<<图片传入错误" );
-               result.put("msg", "图片传入错误");
-               return  result;
+            log.error("<<<<<<<<<图片传入错误");
+            result.put("msg", "图片传入错误");
+            return result;
         }
         File file = new File(imgPath);
         if (!file.exists()) {
@@ -557,9 +540,9 @@ public class VoteController {
         try {
 
             //获取文件名和后缀
-            String filename = UUID.randomUUID().toString().replaceAll("-", "")+".png";
-            String returnUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()  +"/img/"+filename;
-            String url=imgPath+filename;
+            String filename = UUID.randomUUID().toString().replaceAll("-", "") + ".png";
+            String returnUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + "/img/" + filename;
+            String url = imgPath + filename;
             fileOutputStream = new FileOutputStream(new File(file, filename));
             FileCopyUtils.copy(pic.getInputStream(), fileOutputStream);
             result.put("msg", "OK");

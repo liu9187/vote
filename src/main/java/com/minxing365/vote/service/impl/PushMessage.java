@@ -49,6 +49,7 @@ public class PushMessage {
             Article article = new Article( title, description, "", null, appUrl );
             message.addArticle( article );
             result = appAccount.sendOcuMessageToUsers( networkId, null, message, ocuID, ocuSecret );
+
         } catch (MxException e) {
             log.error( "=====发送请求异常=====", e );
         }

@@ -19,6 +19,10 @@ public class VoteMainTable {
     private Long endTime;
     //状态
     private Integer state;
+    //描述
+    private  String describes;
+    // 备注
+    private String remarks;
 
     public String getId() {
         return id;
@@ -66,5 +70,21 @@ public class VoteMainTable {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public String getDescribes() {
+        return describes;
+    }
+
+    public void setDescribes(String describes) {
+        this.describes = describes;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true">
-	<property scope="system" name="APP_NAME" value="mx_integral" />
+	<property scope="system" name="APP_NAME" value="mx_vote" />
 	<property scope="system" name="APP_ENV" value="development" />
-	<property scope="system" name="LOG_DIR" value="/home/ewhine/deploy/vote/logs" />
+	<property scope="system" name="LOG_DIR" value="/home/ewhine/deploy/mx_vote/logs" />
 	<!--<property scope="system" name="LOG_DIR" value="./logs" />-->
 
 	<!-- 日志写入文件系统 -->
