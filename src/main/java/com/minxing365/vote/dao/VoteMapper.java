@@ -78,7 +78,7 @@ public interface VoteMapper {
      * @param id
      * @return
      */
-    @Select("SELECT id,vote_title AS voteTitle,create_user_name AS createUserName,create_user_num AS createUserNum,end_time AS endTime,state  FROM vote_main_table  WHERE  id =#{id} ")
+    @Select("SELECT id,vote_title AS voteTitle,create_user_name AS createUserName,create_user_num AS createUserNum,end_time AS endTime,state ,describes,remarks  FROM vote_main_table  WHERE  id=#{id}")
     VoteMainTable selectVoteMainTableById(@Param("id") String id);
 
     /**
@@ -97,6 +97,13 @@ public interface VoteMapper {
     @Select("SELECT  id,vote_id AS voteId,option_title AS optionTitle,picture_url AS pictureUrl,view_url AS viewUrl,option_flag AS optionFlag ,remarks  FROM  option_table WHERE vote_id=#{voteId}")
     List<OptionTable> selectOptionTableByvoteId(@Param("voteId") String voteId);
 
+    /**
+     * 根据选择表标题进行进行查询
+     * @param optionTitle
+     * @return
+     */
+    @Select("SELECT  id,vote_id AS voteId,option_title AS optionTitle,picture_url AS pictureUrl,view_url AS viewUrl,option_flag AS optionFlag ,remarks  FROM  option_table WHERE option_title LIKE #{optionTitle}")
+    List<OptionTable> selectOptionTableByTitle(@Param("optionTitle") String optionTitle);
     /**
      * 更新主表
      *

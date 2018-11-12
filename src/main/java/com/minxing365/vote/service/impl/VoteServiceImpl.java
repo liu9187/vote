@@ -2,6 +2,7 @@ package com.minxing365.vote.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.minxing365.vote.bean.AnswerTable;
 import com.minxing365.vote.bean.OptionTable;
 import com.minxing365.vote.bean.VoteMainTable;
@@ -278,6 +279,11 @@ public class VoteServiceImpl implements VoteService {
         return countList;
     }
 
+    /**
+     * app 投票显示
+     * @param id
+     * @return
+     */
     @Override
     public VoteCount selectOne(String id) {
         VoteCount voteCount = new VoteCount();
@@ -359,6 +365,64 @@ public class VoteServiceImpl implements VoteService {
         }
 
         return voteCount;
+    }
+
+    /**
+     * app 查询
+     * @param optionTitle 选择表标题
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public   String selectOptionTableByTitle(String optionTitle,Integer pageNum, Integer pageSize) {
+        String optionTitleStr="%"+optionTitle+"%";
+        log.info("-------optionTitleStr---"+optionTitleStr);
+        //答案统计列表
+        List<AnswerCount> list = new ArrayList<>();
+        PageHelper.startPage( pageNum, pageSize );
+        //根据主表id调用选择表信息
+        //获取选择表信息
+        List<OptionTable> optionList = voteMapper.selectOptionTableByTitle(optionTitleStr);
+        if (null != optionList && optionList.size() > 0) {
+            for (int j = 0; j < optionList.size(); j++) {
+                if (null == optionList.get( j ).getId()) {
+                    log.error( "<<<<<获取选择表id为null" );
+                    continue;
+                }
+                AnswerCount answerCount = new AnswerCount();
+                //根据选择表的信息查询答案表
+                Integer optionId = optionList.get( j ).getId();
+                //添加到 list选择表id
+                answerCount.setOptionId( optionId );
+                //选择表题目
+                String optiontile = optionList.get( j ).getOptionTitle();
+                //添加到 list 选择表题目
+                answerCount.setOptiontile( optiontile );
+                //获取选择表图片路径
+                String pictureUrl = optionList.get( j ).getPictureUrl();
+                //添加视频路径到视图
+                answerCount.setPictureUrl( pictureUrl );
+                //获取视频路径
+                String viewUrl = optionList.get( j ).getViewUrl();
+                //视频添加到视图
+                answerCount.setViewUrl( viewUrl );
+                //选择表备注
+                String remarks = optionList.get( j ).getRemarks();
+                answerCount.setRemarks( remarks );
+                //获取答案总条数
+                Integer count = voteMapper.selectCount( optionId );
+                //答案总条数 添加到 list
+                answerCount.setCount( count );
+                list.add( answerCount );
+            }
+        }
+        PageInfo<VoteMainTable> page = new PageInfo(list);
+        JSONObject object=new JSONObject();
+        object.put("list",list);
+        object.put("total",page.getTotal());
+        object.put("pages",page.getPages());
+        return object.toJSONString();
     }
 
     @Override

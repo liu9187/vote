@@ -518,6 +518,26 @@ public class VoteController {
     }
 
     /**
+     * app 查询
+     * @param optionTitle 选择表 主题
+     * @param pageNum 起始页
+     * @param pageSize 每页条数
+     * @return
+     */
+       @RequestMapping(value = "/selectOptionTableByTitle", method = {RequestMethod.GET})
+      public String selectOptionTableByTitle(@RequestParam(defaultValue = "") String optionTitle,@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "6") Integer pageSize){
+              log.info("--selectOptionTableByTitle---optionTitle="+optionTitle+";pageNum="+pageNum+" ;pageSize="+pageSize);
+             String result=null;
+           try {
+             result=  voteService.selectOptionTableByTitle(optionTitle,pageNum,pageSize);
+           }catch (Exception e){
+                 log.error("<<<<调用app查询错误",e);
+           }
+
+        return result;
+      }
+
+    /**
      * 上传
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)

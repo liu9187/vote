@@ -3,6 +3,7 @@ package com.minxing365.vote.service;
 import com.minxing365.vote.bean.AnswerTable;
 import com.minxing365.vote.bean.OptionTable;
 import com.minxing365.vote.bean.VoteMainTable;
+import com.minxing365.vote.pojo.AnswerCount;
 import com.minxing365.vote.pojo.VoteAndOption;
 import com.minxing365.vote.pojo.VoteCount;
 import org.apache.ibatis.annotations.Param;
@@ -132,6 +133,13 @@ public interface VoteService {
      * @return
      */
     VoteCount selectOne(String id);
+
+    /**
+     * app 查询接口
+     * @param optionTitle 选择表标题
+     * @return
+     */
+    String selectOptionTableByTitle(@Param("optionTitle") String optionTitle,Integer pageNum, Integer pageSize);
 
     /**
      * 首页列表
