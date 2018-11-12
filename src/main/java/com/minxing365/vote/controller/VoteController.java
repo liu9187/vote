@@ -101,13 +101,13 @@ public class VoteController {
     }
 
     /**
-     * 保存答案表
+     * 保存答案表 手机端
      *
      * @param answerTable
      * @return
      */
     @RequestMapping(value = "/insertAnswerTable", method = {RequestMethod.POST})
-    public String insertAnswerTable(@RequestBody AnswerTable answerTable) {
+    public String insertAnswerTable(AnswerTable answerTable) {
         JSONObject jsonObject = new JSONObject();
         Integer id = voteService.insertAnswerTable( answerTable );
         jsonObject.put( "id", id );
@@ -504,6 +504,34 @@ public class VoteController {
             log.info( "-------selectOne invocation failed" ,e);
         }
         return  jsonObject.toJSONString();
+    }
+
+    /**
+     * 验证用户投票次数
+     * @param userNum
+     * @param voteId
+     * @return
+     */
+    @RequestMapping(value = "/getCount", method = {RequestMethod.GET})
+    public  String getCount(@RequestParam String userNum,@RequestParam String voteId){
+          log.info( "------验证用户投票次数 参数：userNum =="+userNum+" ; voteId=="+voteId );
+        JSONObject jsonObject = new JSONObject();
+        Integer sum=0;
+        try {
+            sum=   voteService.getCount( userNum,voteId );
+           if (null==sum){
+               jsonObject.put( "message","投票次数查询错误" );
+               jsonObject.put( "sum",-1 );
+           }
+
+        }catch (Exception e){
+            jsonObject.put( "message","投票次数查询错误" );
+            jsonObject.put( "sum",-1 );
+            log.error( "<<<<<<<<<投票次数查询错误" ,e);
+        }
+        jsonObject.put( "message","投票次数查询成功" );
+        jsonObject.put( "sum",sum );
+        return jsonObject.toJSONString();
     }
 
     /**

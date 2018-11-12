@@ -138,4 +138,12 @@ public interface VoteService {
      * @return
      */
     List<VoteMainTable> selectVoteMainTable(Integer pageNum,Integer pageSize);
+
+    /**
+     * 验证用户投票数量
+     * @param userNum
+     * @param voteId
+     * @return
+     */
+    Integer getCount(@Param("userNum") String userNum, @Param("voteId") String voteId);
 }
