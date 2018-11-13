@@ -132,14 +132,14 @@ public interface VoteService {
      * @param id
      * @return
      */
-    VoteCount selectOne(String id);
+    String selectOne(String id,Integer pageNum,Integer pageSize);
 
     /**
      * app 查询接口
      * @param optionTitle 选择表标题
      * @return
      */
-    String selectOptionTableByTitle(@Param("optionTitle") String optionTitle,Integer pageNum, Integer pageSize);
+    String selectOptionTableByTitle( String optionTitle,Integer pageNum, Integer pageSize,String voteId);
 
     /**
      * 首页列表

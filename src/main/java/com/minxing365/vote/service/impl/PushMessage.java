@@ -8,6 +8,7 @@ import com.minxing.client.ocu.Article;
 import com.minxing.client.ocu.ArticleMessage;
 import com.minxing365.vote.util.PropertiesUtil;
 import org.apache.log4j.Logger;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -53,6 +54,7 @@ public class PushMessage {
         } catch (MxException e) {
             log.error( "=====发送请求异常=====", e );
         }
+          log.info("------------发送结束------");
         return result;
     }
 

@@ -103,8 +103,8 @@ public interface VoteMapper {
      * @param optionTitle
      * @return
      */
-    @Select("SELECT  id,vote_id AS voteId,option_title AS optionTitle,picture_url AS pictureUrl,view_url AS viewUrl,option_flag AS optionFlag ,remarks  FROM  option_table WHERE option_title LIKE #{optionTitle}")
-    List<OptionTable> selectOptionTableByTitle(@Param("optionTitle") String optionTitle);
+    @Select("SELECT  id,vote_id AS voteId,option_title AS optionTitle,picture_url AS pictureUrl,view_url AS viewUrl,option_flag AS optionFlag ,remarks  FROM  option_table WHERE  vote_id=#{voteId} AND  option_title LIKE #{optionTitle}")
+    List<OptionTable> selectOptionTableByTitle(@Param("optionTitle") String optionTitle,@Param("voteId") String voteId);
     /**
      * 更新主表
      *

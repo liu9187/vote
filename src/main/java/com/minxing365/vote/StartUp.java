@@ -2,13 +2,15 @@ package com.minxing365.vote;
 import com.minxing365.dbschema.migrate.MigrateTool;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
+@EnableSwagger2
 @SpringBootApplication
 public class StartUp {
 

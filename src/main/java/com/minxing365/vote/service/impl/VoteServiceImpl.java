@@ -12,6 +12,7 @@ import com.minxing365.vote.pojo.VoteAndOption;
 import com.minxing365.vote.pojo.VoteCount;
 import com.minxing365.vote.service.VoteService;
 import com.minxing365.vote.util.JnbEsbUtil;
+import com.minxing365.vote.util.PageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class VoteServiceImpl implements VoteService {
                 String id = voteMainTable.getId();
                 if (result > 0) {
                     //状态更新成功，可以发布消息
-                    //发布消息接口
+                   // 发布消息接口
                     log.info( "-------消息推送开始" );
                     Thread thread = new Thread( () -> PushMessage.sendOcuMessageToUsers( "投票通知", voteTitle, id ) );
                     thread.start();
@@ -285,8 +286,9 @@ public class VoteServiceImpl implements VoteService {
      * @return
      */
     @Override
-    public VoteCount selectOne(String id) {
+    public String selectOne(String id,Integer pageNum,Integer pageSize) {
         VoteCount voteCount = new VoteCount();
+        JSONObject object=new JSONObject();
         try {
             //根据主表id查询主表
             VoteMainTable voteMainTable = voteMapper.selectVoteMainTableById( id );
@@ -312,6 +314,7 @@ public class VoteServiceImpl implements VoteService {
                 }else {
                     voteCount.setRemarks("");
                 }
+
                 //答案统计列表
                 List<AnswerCount> list = new ArrayList<>();
                 //根据主表id调用选择表信息
@@ -351,8 +354,16 @@ public class VoteServiceImpl implements VoteService {
                     }
 
                 }
+//                PageInfo<AnswerCount>  page = new PageInfo(list);
+//                PageHelper.startPage( pageNum, pageSize );
+                //分页
+                PageUtils<AnswerCount> pageUtils=new PageUtils<>(pageNum,pageSize,list);
+
                 //list 封装到 对象
-                voteCount.setList( list );
+                voteCount.setList(  pageUtils.getList());
+                object.put("total",pageUtils.getTotal());
+                object.put("pages",pageUtils.getPages());
+
             }
             //查询主表为null
             else {
@@ -364,7 +375,9 @@ public class VoteServiceImpl implements VoteService {
             log.error( "<<<<<<<<selectVoteMainTableByCondition 方法失败", e );
         }
 
-        return voteCount;
+        object.put("voteCount",voteCount);
+
+        return object.toJSONString();
     }
 
     /**
@@ -375,7 +388,7 @@ public class VoteServiceImpl implements VoteService {
      * @return
      */
     @Override
-    public   String selectOptionTableByTitle(String optionTitle,Integer pageNum, Integer pageSize) {
+    public   String selectOptionTableByTitle(String optionTitle,Integer pageNum, Integer pageSize,String voteId) {
         String optionTitleStr="%"+optionTitle+"%";
         log.info("-------optionTitleStr---"+optionTitleStr);
         //答案统计列表
@@ -383,7 +396,7 @@ public class VoteServiceImpl implements VoteService {
         PageHelper.startPage( pageNum, pageSize );
         //根据主表id调用选择表信息
         //获取选择表信息
-        List<OptionTable> optionList = voteMapper.selectOptionTableByTitle(optionTitleStr);
+        List<OptionTable> optionList = voteMapper.selectOptionTableByTitle(optionTitleStr,voteId);
         if (null != optionList && optionList.size() > 0) {
             for (int j = 0; j < optionList.size(); j++) {
                 if (null == optionList.get( j ).getId()) {
