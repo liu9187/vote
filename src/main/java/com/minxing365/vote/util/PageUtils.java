@@ -24,6 +24,11 @@ public class PageUtils<T> {
         this.list = list;
         this.total = list.size();
         this.pages = (total + pageSize - 1) / pageSize;
+        this.list=initList();
+    }
+    public  List<T> initList(){
+        List<T> newList = this.list.subList(pageSize * (pageNum - 1), (pageNum * pageSize) > total ? total : (pageNum * pageSize));
+        return newList;
     }
 
     public Integer getPageNum() {
@@ -38,21 +43,31 @@ public class PageUtils<T> {
         return pageSize;
     }
 
-    //获取分页后的list
-    public List<T> getList() {
-        List<T> newList = this.list.subList(pageSize * (pageNum - 1), (pageNum * pageSize) > total ? total : (pageNum * pageSize));
-        return newList;
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
     }
 
-    //获取总条数
+    public List<T> getList() {
+        return list;
+    }
+
+    public void setList(List<T> list) {
+        this.list = list;
+    }
+
     public Integer getTotal() {
         return total;
     }
 
-    //获取总页数
+    public void setTotal(Integer total) {
+        this.total = total;
+    }
+
     public Integer getPages() {
         return pages;
     }
 
-
+    public void setPages(Integer pages) {
+        this.pages = pages;
+    }
 }

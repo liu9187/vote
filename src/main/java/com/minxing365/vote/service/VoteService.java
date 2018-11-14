@@ -125,7 +125,7 @@ public interface VoteService {
      * @param voteTitle 主题
      * @return
      */
-    List<VoteCount> select(@Param("state") Integer state, @Param("createUserNum") String createUserNum, @Param("voteTitle") String voteTitle,@Param( "pageNum" ) Integer pageNum,@Param( "pageSize" ) Integer pageSize);
+    List<VoteCount> select(@Param("state") Integer state, @Param("createUserNum") String createUserNum, @Param("voteTitle") String voteTitle,@Param( "pageNum" ) Integer pageNum,@Param( "pageSize" ) Integer pageSize,@Param( "pageNum1" ) Integer pageNum1,@Param( "pageSize1" ) Integer pageSize1);
 
     /**
      * app页面显示

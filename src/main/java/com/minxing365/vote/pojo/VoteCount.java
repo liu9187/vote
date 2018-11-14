@@ -12,6 +12,10 @@ public class VoteCount {
     private  String describes;
     // 备注
     private String remarks;
+    //总条数
+    private Integer total;
+    //总页数
+    private Integer pages;
    //选择列表
   private List<AnswerCount> list;
 
@@ -37,6 +41,22 @@ public class VoteCount {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public Integer getTotal() {
+        return total;
+    }
+
+    public void setTotal(Integer total) {
+        this.total = total;
+    }
+
+    public Integer getPages() {
+        return pages;
+    }
+
+    public void setPages(Integer pages) {
+        this.pages = pages;
     }
 
     public List<AnswerCount> getList() {
