@@ -82,6 +82,13 @@ public interface VoteMapper {
     VoteMainTable selectVoteMainTableById(@Param("id") String id);
 
     /**
+     * 根据发布状态查询主表
+     * @return
+     */
+    @Select("SELECT id,vote_title AS voteTitle,create_user_name AS createUserName,create_user_num AS createUserNum,end_time AS endTime,state ,describes,remarks FROM vote_main_table  WHERE state=2")
+    List<VoteMainTable>  selectVoteMainTableByState();
+
+    /**
      * 首页查询列表
      *
      * @return
@@ -183,6 +190,15 @@ public interface VoteMapper {
      */
     @Select("SELECT COUNT(id)  FROM  answer_table WHERE option_id=#{optionId}")
     Integer selectCount(@Param("optionId") Integer optionId);
+
+    /**
+     * 当前登陆人是否可以投票
+     * @param optionId
+     * @param loginNum
+     * @return
+     */
+    @Select("SELECT COUNT(id)  FROM  answer_table WHERE option_id=#{optionId} and  option_title=#{loginNum}")
+    Integer isVote(@Param("optionId") Integer optionId,@Param("loginNum") String loginNum);
 
     /**
      * 验证用户投票条数——根据行员号和主表id查询选择表id

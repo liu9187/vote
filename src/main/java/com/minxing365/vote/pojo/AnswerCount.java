@@ -16,6 +16,8 @@ public class AnswerCount {
     private String viewUrl;
     //备注
     private String remarks;
+    //判断登陆人可以投票 0 可以 其他数字不可以
+    private Integer isVote;
 
     public Integer getOptionId() {
         return optionId;
@@ -63,5 +65,13 @@ public class AnswerCount {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public Integer getIsVote() {
+        return isVote;
+    }
+
+    public void setIsVote(Integer isVote) {
+        this.isVote = isVote;
     }
 }

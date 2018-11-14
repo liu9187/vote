@@ -132,7 +132,7 @@ public interface VoteService {
      * @param id
      * @return
      */
-    String selectOne(String id,Integer pageNum,Integer pageSize);
+    String selectOne(String id,Integer pageNum,Integer pageSize,String optionTitle);
 
     /**
      * app 查询接口
@@ -146,6 +146,12 @@ public interface VoteService {
      * @return
      */
     List<VoteMainTable> selectVoteMainTable(Integer pageNum,Integer pageSize);
+
+    /**
+     * 根据发布状态查询列表
+     * @return
+     */
+    List<VoteMainTable>  selectVoteMainTableByState(Integer pageNum,Integer pageSize);
 
     /**
      * 验证用户投票数量

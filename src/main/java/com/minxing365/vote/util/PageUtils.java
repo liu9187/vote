@@ -45,10 +45,10 @@ public class PageUtils<T> {
                size=list.size();
            }
         List<T> newList=new ArrayList<>();
-        for (int i=0;i<size;i++){
-            //索引id
-            Integer index=pageNum-1;
+         Integer index=pageNum-1;
+        for ( int i=0;i<size;i++){
                newList.add(list.get(index));
+                  index++;
         }
         return newList;
     }
