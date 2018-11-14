@@ -565,6 +565,8 @@ public class VoteController {
      * @param voteTitle     主题
      * @param pageNum       起始页
      * @param pageSize      每页显示条数
+     * @param pageNum1       起始页 子表
+     * @param pageSize1      每页显示条数 子表
      * @return
      */
     @ApiOperation("投票信息查询")
@@ -572,12 +574,20 @@ public class VoteController {
                        @ApiImplicitParam(name = "createUserNum",paramType = "query",dataType = "String",required = true,value = "行员号"),
                        @ApiImplicitParam(name = "voteTitle",paramType = "query",dataType = "String",required = true,value = "主题"),
                        @ApiImplicitParam(name = "pageNum",paramType = "query",dataType = "String",value = "起始页"),
-                       @ApiImplicitParam(name = "pageSize",paramType = "query",dataType = "String",value = "每页显示条数")})
+                       @ApiImplicitParam(name = "pageSize",paramType = "query",dataType = "String",value = "每页显示条数"),
+                       @ApiImplicitParam(name = "pageNum1",paramType = "query",dataType = "String",value = "起始页"),
+                       @ApiImplicitParam(name = "pageSize1",paramType = "query",dataType = "String",value = "每页显示条数")})
     @RequestMapping(value = "/select", method = {RequestMethod.GET})
-    public String select(@RequestParam Integer state, @RequestParam String createUserNum, @RequestParam String voteTitle, @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize) {
+    public String select(@RequestParam Integer state,
+                         @RequestParam String createUserNum,
+                         @RequestParam String voteTitle,
+                         @RequestParam(defaultValue = "1") Integer pageNum,
+                         @RequestParam(defaultValue = "10") Integer pageSize,
+                         @RequestParam(defaultValue = "1") Integer pageNum1,
+                         @RequestParam(defaultValue = "10") Integer pageSize1) {
         JSONObject jsonObject = new JSONObject();
         try {
-            List<VoteCount> list = voteService.select(state, createUserNum, voteTitle, pageNum, pageSize);
+            List<VoteCount> list = voteService.select(state, createUserNum, voteTitle, pageNum, pageSize,pageNum1,pageSize1);
             //分页
             PageUtils<VoteCount> pageUtils=new PageUtils<>(pageNum,pageSize,list);
             jsonObject.put("list", pageUtils.getList());
