@@ -22,6 +22,8 @@ public class PageUtils<T> {
         this.pageNum = pageNum;
         this.pageSize = pageSize;
         this.list = list;
+        this.total = list.size();
+        this.pages = (total + pageSize - 1) / pageSize;
     }
 
     public Integer getPageNum() {
@@ -38,33 +40,19 @@ public class PageUtils<T> {
 
     //获取分页后的list
     public List<T> getList() {
-           Integer size;
-           if (list.size()>=pageSize){
-               size=pageSize;
-           }else {
-               size=list.size();
-           }
-        List<T> newList=new ArrayList<>();
-         Integer index=pageNum-1;
-        for ( int i=0;i<size;i++){
-               newList.add(list.get(index));
-                  index++;
-        }
+        List<T> newList = this.list.subList(pageSize * (pageNum - 1), (pageNum * pageSize) > total ? total : (pageNum * pageSize));
         return newList;
     }
+
     //获取总条数
     public Integer getTotal() {
-           if (null !=list && list.size()>0){
-               total=list.size();
-           }
         return total;
     }
+
     //获取总页数
     public Integer getPages() {
-           if (null !=list && list.size()>0){
-               pages=list.size()/pageSize;
-           }
         return pages;
     }
+
 
 }

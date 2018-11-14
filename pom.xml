@@ -203,6 +203,12 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>io.swagger</groupId>-->
+                    <!--<artifactId>swagger-models</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
             <version>2.2.2</version>
         </dependency>
         <dependency>

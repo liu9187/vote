@@ -41,7 +41,7 @@ public class PushMessage {
     public static OcuMessageSendResult sendOcuMessageToUsers(String title, String description,String id) {
         OcuMessageSendResult result = null;
           StringBuilder appUrlStr=new StringBuilder( );
-             appUrlStr.append( "launchApp://" ).append( appId ).append( "?id=").append( id );
+             appUrlStr.append( "launchApp://" ).append( appId ).append( "$$#/index?id=").append( id );
             String appUrl=appUrlStr.toString();
           log.info( "-----appUrl:" +appUrl);
         try {

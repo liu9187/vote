@@ -200,7 +200,7 @@ public class VoteServiceImpl implements VoteService {
         List<VoteCount> countList = new ArrayList<>();
         try {
             //分页插件
-            PageHelper.startPage( pageNum, pageSize );
+          //  PageHelper.startPage( pageNum, pageSize );
             List<VoteMainTable> voteList = voteMapper.selectVoteMainTableByCondition( state, createUserNum, voteTitleStr );
             //显示查询页面
             //判断是否有相应的结果
@@ -286,7 +286,8 @@ public class VoteServiceImpl implements VoteService {
      * @return
      */
     @Override
-    public String selectOne(String id,Integer pageNum,Integer pageSize) {
+    public String selectOne(String id,Integer pageNum,Integer pageSize,String loginNum) {
+            log.info("--------loginNum="+loginNum);
         VoteCount voteCount = new VoteCount();
         JSONObject object=new JSONObject();
         try {
@@ -350,6 +351,10 @@ public class VoteServiceImpl implements VoteService {
                         Integer count = voteMapper.selectCount( optionId );
                         //答案总条数 添加到 list
                         answerCount.setCount( count );
+                        //获取登陆人是否投票数量
+                        log.info("-----optionId="+optionId+" ; loginNum="+loginNum);
+                        Integer isVote=  voteMapper.isVote(optionId,loginNum);
+                        answerCount.setIsVote(isVote);
                         list.add( answerCount );
                     }
 
@@ -443,6 +448,13 @@ public class VoteServiceImpl implements VoteService {
         //分页插件
         PageHelper.startPage( pageNum, pageSize );
         return voteMapper.selectVoteMainTable();
+    }
+
+    @Override
+    public List<VoteMainTable> selectVoteMainTableByState(Integer pageNum, Integer pageSize) {
+        //分页插件
+        PageHelper.startPage( pageNum, pageSize );
+        return voteMapper.selectVoteMainTableByState();
     }
 
     @Override
