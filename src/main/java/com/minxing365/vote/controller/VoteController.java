@@ -9,6 +9,7 @@ import com.minxing365.vote.pojo.VoteAndOption;
 import com.minxing365.vote.pojo.VoteCount;
 import com.minxing365.vote.service.VoteService;
 import com.minxing365.vote.util.JnbEsbUtil;
+import com.minxing365.vote.util.PageUtils;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +109,6 @@ public class VoteController {
         }
         return jsonObject.toJSONString();
     }
-
     /**
      * 保存选项表
      *
@@ -531,6 +531,33 @@ public class VoteController {
     }
 
     /**
+     * 发布列表
+     * @param pageNum 起始页
+     * @param pageSize 每页显示的条数
+     * @return
+     */
+    @ApiOperation("发布列表")
+    @ApiImplicitParams({@ApiImplicitParam(name = "pageNum",paramType ="query",dataType = "Integer",defaultValue = "1",value = "起始页"),
+                       @ApiImplicitParam(name = "pageSize",paramType = "query",dataType = "Integer",defaultValue = "10",value = "每页显示的条数")})
+    @RequestMapping(value = "/selectVoteMainTableByState", method = {RequestMethod.GET})
+    public  String selectVoteMainTableByState(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize){
+        JSONObject jsonObject = new JSONObject();
+             log.info("-------selectVoteMainTableByState parameter : pageNum="+pageNum+"; pageSize="+pageSize);
+        try {
+            List<VoteMainTable> list = voteService.selectVoteMainTableByState(pageNum, pageSize);
+            PageInfo<VoteMainTable> page = new PageInfo(list);
+            jsonObject.put("list", list);
+            //总页数
+            jsonObject.put("pages", page.getPages());
+            //总记录数
+            jsonObject.put("total", page.getTotal());
+        } catch (Exception e) {
+            log.error("<<<<<selectVoteMainTableByState 调用失败", e);
+        }
+        return jsonObject.toJSONString();
+    }
+
+    /**
      * 投票信息查询
      *
      * @param state         发布状态
@@ -551,12 +578,13 @@ public class VoteController {
         JSONObject jsonObject = new JSONObject();
         try {
             List<VoteCount> list = voteService.select(state, createUserNum, voteTitle, pageNum, pageSize);
-            PageInfo<VoteMainTable> page = new PageInfo(list);
-            jsonObject.put("list", list);
+            //分页
+            PageUtils<VoteCount> pageUtils=new PageUtils<>(pageNum,pageSize,list);
+            jsonObject.put("list", pageUtils.getList());
             //总页数
-            jsonObject.put("pages", page.getPages());
+            jsonObject.put("pages", pageUtils.getPages());
             //总记录数
-            jsonObject.put("total", page.getTotal());
+            jsonObject.put("total", pageUtils.getTotal());
             //  jsonObject.put( "message","查询成功" );
             log.info("-------select invocation succeeded");
         } catch (Exception e) {
@@ -577,13 +605,17 @@ public class VoteController {
     @ApiImplicitParams({
                           @ApiImplicitParam(name = "id",paramType = "query",dataType = "String",value = "主表id"),
                           @ApiImplicitParam(name = "pageNum",paramType = "query",dataType = "String",value = "起始页"),
-                          @ApiImplicitParam(name = "pageSize",paramType = "query",dataType = "String",value = "每页显示条数")})
+                          @ApiImplicitParam(name = "pageSize",paramType = "query",dataType = "String",value = "每页显示条数"),
+                          @ApiImplicitParam(name = "loginNum",paramType = "query",dataType = "String",value = "登陆人行员号")})
     @RequestMapping(value = "/selectOne", method = {RequestMethod.GET})
-    public String selectOne(@RequestParam String id, @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize) {
-        String result=null;
+    public String selectOne(@RequestParam String id,
+                            @RequestParam(defaultValue = "1") Integer pageNum,
+                            @RequestParam(defaultValue = "10") Integer pageSize,
+                            @RequestParam String loginNum) {
+        String result=new String();
            log.info("----selectOne parameter are id="+id+"; pageNum="+pageNum+";pageSize="+pageSize);
         try {
-             result = voteService.selectOne(id,pageNum,pageSize);
+             result = voteService.selectOne(id,pageNum,pageSize,loginNum);
             log.info("------selectOne 返回结果 result："+result+" ; message:查询成功");
         } catch (Exception e) {
             log.info("-------selectOne invocation failed", e);
