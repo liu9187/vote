@@ -16,7 +16,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import javax.sql.DataSource;
 
 @Configuration
-@MapperScan(basePackages="com.minxing.integral.dao", sqlSessionFactoryRef = "sqlSessionFactory")
+@MapperScan(basePackages="com.minxing365.vote.dao", sqlSessionFactoryRef = "sqlSessionFactory")
 public class DatasourceConfig {
 
     @Autowired

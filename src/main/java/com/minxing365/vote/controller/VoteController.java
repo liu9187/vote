@@ -665,13 +665,13 @@ public class VoteController {
     /**
      *  投票数验证
      * @param userNum 答案表行员号
-     * @param voteId  主表主题
+     * @param voteId  主表id
      * @return
      */
     @ApiOperation("投票数验证")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userNum",paramType = "query",dataType = "String",value = "答案表行员号" ,required = true),
-            @ApiImplicitParam(name = "voteId",paramType = "query",dataType = "String",value = "主表主题",required = true)
+            @ApiImplicitParam(name = "voteId",paramType = "query",dataType = "String",value = "主表id",required = true)
             })
       @RequestMapping(value = "/getCount", method = {RequestMethod.GET})
       public String getCount(@RequestParam(defaultValue = "") String userNum, @RequestParam(defaultValue = "") String voteId){

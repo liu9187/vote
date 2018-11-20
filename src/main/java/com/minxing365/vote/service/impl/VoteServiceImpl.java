@@ -471,7 +471,7 @@ public class VoteServiceImpl implements VoteService {
                 for (int i = 0; i < opIdList.size(); i++) {
                     if (null != opIdList.get(i)) {
                         Integer count = voteMapper.getAnswerCount(userNum, opIdList.get(i));
-                        log.info("----第" + i + "次加入到总条数-----");
+                   //     log.info("----第" + i + "次加入到总条数-----");
                         sum += count;
                     } else {
                         log.error("<<<<<<数据异常");
@@ -480,12 +480,13 @@ public class VoteServiceImpl implements VoteService {
                 }
             } else {
                 //没有查询到 选择表
+                  log.info("-----没有查到选择表,sum="+sum);
                 return sum;
             }
         } catch (Exception e) {
             log.error("<<<<<<<验证用户投票接口异常", e);
         }
-        log.info("--------用户投票总条数");
+        log.info("--------当天用户投票总条数：sum="+sum);
         return sum;
     }
 

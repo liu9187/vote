@@ -215,7 +215,7 @@ public interface VoteMapper {
      * @param userNum
      * @return
      */
-    @Select(" SELECT COUNT(a.id) AS count  FROM  option_table o  LEFT JOIN answer_table a ON a.option_id=o.id WHERE   a.option_title=#{userNum} AND o.id=#{opId}")
+    @Select(" SELECT COUNT(a.id) AS count  FROM  option_table o  LEFT JOIN answer_table a ON a.option_id=o.id WHERE   a.option_title=#{userNum} AND o.id=#{opId} AND TO_DAYS(a.create_time)=TO_DAYS(NOW())")
     Integer getAnswerCount(@Param("userNum") String userNum, @Param("opId") Integer opId);
 
     class IntegralSqlBuilder {
