@@ -43,6 +43,7 @@ public interface InitMapper {
             "picture_url  VARCHAR(255) COMMENT'图片地址',\n" +
             "view_url   VARCHAR(255) COMMENT'视频地址',\n" +
             "option_flag INT COMMENT'选项类型(1文本，2图片，3视频)',\n" +
+            "create_time  timestamp   DEFAULT CURRENT_TIMESTAMP   COMMENT '创建时间',\n"+
             "remarks VARCHAR(255)  COMMENT'备注',\n" + "PRIMARY KEY (`id`)\n" + ")" )
     void initOption();
 
@@ -60,6 +61,7 @@ public interface InitMapper {
             "option_id INT(11) NOT NULL  COMMENT '选项表ID',\n" +
             "option_title VARCHAR(255)  COMMENT'选项表主题',\n" +
             "answer_user_name VARCHAR(255) COMMENT'答题人',\n" +
+            "create_time  timestamp   DEFAULT CURRENT_TIMESTAMP   COMMENT '创建时间',\n"+
             "PRIMARY KEY (`id`)\n" + ")" )
     void initAnswer();
 }
