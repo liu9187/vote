@@ -2,6 +2,7 @@ package com.minxing365.vote;
 import com.minxing365.dbschema.migrate.MigrateTool;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.FileReader;
@@ -18,7 +19,7 @@ public class StartUp {
         if (args != null && args.length > 0 && "update".equals(args[0])){
             //migrate list
             List<String> migrateList = new ArrayList<>();
-            migrateList.add("2018111201.sql");
+            //migrateList.add("2018111201.sql");
             if (migrateList.isEmpty()){
                 return;
             }

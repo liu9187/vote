@@ -197,7 +197,7 @@ public interface VoteMapper {
      * @param loginNum
      * @return
      */
-    @Select("SELECT COUNT(id)  FROM  answer_table WHERE option_id=#{optionId} and  option_title=#{loginNum}")
+    @Select("SELECT COUNT(id)  FROM  answer_table WHERE option_id=#{optionId} and  option_title=#{loginNum} AND TO_DAYS(create_time)=TO_DAYS(NOW())")
     Integer isVote(@Param("optionId") Integer optionId,@Param("loginNum") String loginNum);
 
     /**
