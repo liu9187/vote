@@ -18,7 +18,13 @@ public class VoteDetailsVo {
 //    private Restrict restrict;
 //    private List<Data> data;
 //    private String value;
+    /**
+     * survey_forms id
+     */
     private Integer id;
+    /**
+     * 待解析数据
+     */
     private String body;
     /**
      * apps表id
@@ -28,6 +34,10 @@ public class VoteDetailsVo {
      * sur_in  userId
      */
     private  String userId;
+    /**
+     * survey_name
+     */
+    private  String name;
 
     public Integer getId() {
         return id;
@@ -59,5 +69,13 @@ public class VoteDetailsVo {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

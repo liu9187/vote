@@ -15,7 +15,10 @@ public class ResultVo {
     private  String userId;
     private String label;
     private String tip;
-
+    /**
+     * survey_name
+     */
+    private  String name;
     public Integer getId() {
         return id;
     }
@@ -54,5 +57,13 @@ public class ResultVo {
 
     public void setTip(String tip) {
         this.tip = tip;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
