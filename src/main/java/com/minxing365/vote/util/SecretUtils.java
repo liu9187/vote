@@ -102,21 +102,21 @@ public class SecretUtils {
     }
 
 
-    public static void main(String[] args) throws IOException {
-
-       //
-        FileInputStream fin=new FileInputStream( "config/application.properties" );
-        Properties properties=new Properties(  );
-        properties.load( fin );
-         String password=   properties.getProperty( "db.password" );
-         if (null==password||"".equals( password )){
-             System.out.println("password failed");
-         }else {
-             String encode=  SecretUtils.encode3Des( PASSWORD_CRYPT_KEY,password);
-             System.out.println("【加密之后】"+encode);
-             String decode=   SecretUtils.decode3Des( PASSWORD_CRYPT_KEY,encode );
-             System.out.println("【解密之后】"+decode);
-         }
-
-    }
+//    public static void main(String[] args) throws IOException {
+//
+//       //
+//        FileInputStream fin=new FileInputStream( "config/application.properties" );
+//        Properties properties=new Properties(  );
+//        properties.load( fin );
+//         String password=   properties.getProperty( "db.password" );
+//         if (null==password||"".equals( password )){
+//             System.out.println("password failed");
+//         }else {
+//             String encode=  SecretUtils.encode3Des( PASSWORD_CRYPT_KEY,password);
+//             System.out.println("【加密之后】"+encode);
+//             String decode=   SecretUtils.decode3Des( PASSWORD_CRYPT_KEY,password );
+//             System.out.println("【解密之后】"+decode);
+//         }
+//
+//    }
 }

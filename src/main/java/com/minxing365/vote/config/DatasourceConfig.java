@@ -1,12 +1,15 @@
 package com.minxing365.vote.config;
 
 
+import com.minxing365.vote.controller.VoteController;
 import com.minxing365.vote.util.SecretUtils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,13 +24,14 @@ import static com.minxing365.vote.util.SecretUtils.PASSWORD_CRYPT_KEY;
 @Configuration
 @MapperScan(basePackages="com.minxing365.vote.dao", sqlSessionFactoryRef = "sqlSessionFactory")
 public class DatasourceConfig {
-
+   private Logger log = LoggerFactory.getLogger(DatasourceConfig.class);
     @Autowired
     private Environment env;
 
     @Bean
     public DataSource dataSource() {
         String password=SecretUtils.decode3Des( PASSWORD_CRYPT_KEY,env.getProperty("db.password"));
+        log.info("【解密之后】"+password);
         HikariConfig config = new HikariConfig();
         // 数据库基础配置
         config.setDriverClassName(env.getProperty("db.driverClass"));
@@ -35,7 +39,7 @@ public class DatasourceConfig {
         config.setJdbcUrl(env.getProperty("db.url"));
         config.setUsername(env.getProperty("db.username"));
        // config.setPassword(env.getProperty("db.password"));
-        config.setPassword(env.getProperty(password));
+        config.setPassword(password);
         // 空闲超时时间
         config.setIdleTimeout(60000);
         // 连接超时时间
