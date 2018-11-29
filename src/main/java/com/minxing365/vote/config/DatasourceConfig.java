@@ -24,14 +24,12 @@ import static com.minxing365.vote.util.SecretUtils.PASSWORD_CRYPT_KEY;
 @Configuration
 @MapperScan(basePackages="com.minxing365.vote.dao", sqlSessionFactoryRef = "sqlSessionFactory")
 public class DatasourceConfig {
-   private Logger log = LoggerFactory.getLogger(DatasourceConfig.class);
     @Autowired
     private Environment env;
 
     @Bean
     public DataSource dataSource() {
         String password=SecretUtils.decode3Des( PASSWORD_CRYPT_KEY,env.getProperty("db.password"));
-        log.info("【解密之后】"+password);
         HikariConfig config = new HikariConfig();
         // 数据库基础配置
         config.setDriverClassName(env.getProperty("db.driverClass"));
