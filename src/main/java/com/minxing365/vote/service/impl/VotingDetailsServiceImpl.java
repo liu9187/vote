@@ -30,6 +30,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
                          resultVo.setId(list.get(i).getId());
                          resultVo.setAppId(list.get(i).getAppId());
                          resultVo.setUserId(list.get(i).getUserId());
+                         resultVo.setName(list.get(i).getName());
                       JSONObject jsonObject=JSONObject.parseObject(list.get(i).getBody());
                        resultVo.setLabel(jsonObject.getString("label"));
                        resultVo.setTip(jsonObject.getString("tip"));

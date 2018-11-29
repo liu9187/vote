@@ -1,6 +1,7 @@
 package com.minxing365.vote.config;
 
 
+import com.minxing365.vote.util.SecretUtils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -15,6 +16,8 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 
+import static com.minxing365.vote.util.SecretUtils.PASSWORD_CRYPT_KEY;
+
 @Configuration
 @MapperScan(basePackages="com.minxing365.vote.dao", sqlSessionFactoryRef = "sqlSessionFactory")
 public class DatasourceConfig {
@@ -24,13 +27,15 @@ public class DatasourceConfig {
 
     @Bean
     public DataSource dataSource() {
+        String password=SecretUtils.decode3Des( PASSWORD_CRYPT_KEY,env.getProperty("db.password"));
         HikariConfig config = new HikariConfig();
         // 数据库基础配置
         config.setDriverClassName(env.getProperty("db.driverClass"));
         config.setAutoCommit(false);
         config.setJdbcUrl(env.getProperty("db.url"));
         config.setUsername(env.getProperty("db.username"));
-        config.setPassword(env.getProperty("db.password"));
+       // config.setPassword(env.getProperty("db.password"));
+        config.setPassword(env.getProperty(password));
         // 空闲超时时间
         config.setIdleTimeout(60000);
         // 连接超时时间
