@@ -13,25 +13,25 @@
         <java.version>1.8</java.version>
     </properties>
     <!--<name>mx_vote</name>-->
-    <!--<repositories>-->
-        <!--<repository>-->
-            <!--<id>dehuinetmaven</id>-->
-            <!--<name>dehuinetmaven</name>-->
-            <!--<url>http://maven.dehuinet.com:8081/nexus/content/groups/public/</url>-->
-            <!--<snapshots>-->
-                <!--<updatePolicy>always</updatePolicy>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
-        <!--<repository>-->
-            <!--<id>dehuinetmaven_thirdparty</id>-->
-            <!--<name>dehuinetmaven_thirdparty</name>-->
-            <!--<url>http://maven.dehuinet.com:8081/nexus/content/repositories/thirdparty/</url>-->
-            <!--<snapshots>-->
-                <!--<updatePolicy>always</updatePolicy>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
+    <repositories>
+        <repository>
+            <id>dehuinetmaven</id>
+            <name>dehuinetmaven</name>
+            <url>http://maven.dehuinet.com:8081/nexus/content/groups/public/</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>dehuinetmaven_thirdparty</id>
+            <name>dehuinetmaven_thirdparty</name>
+            <url>http://maven.dehuinet.com:8081/nexus/content/repositories/thirdparty/</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
 
-    <!--</repositories>-->
+    </repositories>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

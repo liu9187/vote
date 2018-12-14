@@ -8,7 +8,12 @@ import org.apache.ibatis.annotations.Select;
  * Created by SZZ on 2017/5/10.
  */
 public interface UserMapper {
-
+    /**
+     * 查询用户
+     * @param accountId
+     * @param networkId
+     * @return
+     */
     @Select("SELECT id FROM users WHERE network_id = #{networkId} AND account_id = #{accountId} AND actived=1 limit 1")
     Integer findUidByAccountIdAndNetWorkId(@Param("accountId") Long accountId, @Param("networkId") Integer networkId);
 
@@ -19,6 +24,12 @@ public interface UserMapper {
             "LIMIT 1")
     Oauth2AccessToken findAccountByToken(@Param("token") String token);
 
+    /**
+     * 查询社区管理员的表
+     * @param nd
+     * @param accountId
+     * @return
+     */
     @Select("SELECT\n" + "\tid\n" + "FROM\n" + "\tuser_network_adminnings\n" + "WHERE\n"
             + "\tuser_id = (\n" + "\t\tSELECT\n" + "\t\t\tid\n" + "\t\tFROM\n" + "\t\t\tusers\n"
             + "\t\tWHERE\n" + "\t\t\tnetwork_id = #{nd}\n" + "\t\tAND account_id = #{accountId}\n" + "\t)\n"
