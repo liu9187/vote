@@ -140,7 +140,7 @@ public class VoteServiceImpl implements VoteService {
         }
         if (result > 0) {
             String voteTitle = voteMainTable.getVoteTitle();
-
+            log.info("-------消息推送开始");
             //发布消息接口
             Thread thread = new Thread(() -> PushMessage.sendOcuMessageToUsers("投票通知", voteTitle, id));
             thread.start();

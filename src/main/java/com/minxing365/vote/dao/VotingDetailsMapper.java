@@ -19,7 +19,14 @@ public interface VotingDetailsMapper {
      * @param name 投票主题
      * @return
      */
-    @Select("SELECT  sf.id ,sf.app_id AS appId,si.user_id AS userId,sa.`name` ,sf.body FROM survey_forms sf ,survey_apps sa,survey_instance si WHERE sf.app_id=sa.id AND sa.id=si.app_id AND sa.`name` LIKE #{name} GROUP BY sf.id;;")
+    @Select("SELECT  sf.id ,sf.app_id AS appId,si.user_id AS userId,sa.`name` ,sf.body FROM survey_forms sf ,survey_apps sa,survey_instance si WHERE sf.app_id=sa.id AND sa.id=si.app_id AND sa.`name` LIKE #{name} GROUP BY sf.id; ")
     List<VoteDetailsVo> selectVotingDetailsByName(@Param("name") String name);
 
+    /**
+     * 获取信息采集信息
+     * @param name
+     * @return
+     */
+    @Select("SELECT sa.`modify`,sa.`name`,si.user_id AS userId,si.app_id AS appId,si.forms  FROM survey_apps sa, survey_instance si WHERE sa.id = si.app_id AND sa.`name` LIKE #{name} GROUP BY user_id; ")
+    List<VoteDetailsVo> selectVotingDetails2ByName(@Param("name") String name);
 }

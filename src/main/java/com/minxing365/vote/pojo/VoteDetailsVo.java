@@ -6,18 +6,6 @@ import java.util.List;
  * 投票详情对象
  */
 public class VoteDetailsVo {
-//    private boolean condition;
-//    private String type;
-//    private String name;
-//    private String label;
-//    private String tip;
-//    private String bind;
-//    private String componentId;
-//    private String valueClassName;
-//    private boolean valid;
-//    private Restrict restrict;
-//    private List<Data> data;
-//    private String value;
     /**
      * survey_forms id
      */
@@ -38,6 +26,11 @@ public class VoteDetailsVo {
      * survey_name
      */
     private  String name;
+    /**
+     * survey_apps forms
+     */
+    private  String forms;
+    private  String modify;
 
     public Integer getId() {
         return id;
@@ -77,5 +70,21 @@ public class VoteDetailsVo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getForms() {
+        return forms;
+    }
+
+    public void setForms(String forms) {
+        this.forms = forms;
+
+    }
+    public String getModify() {
+        return modify;
+    }
+
+    public void setModify(String modify) {
+        this.modify = modify;
     }
 }

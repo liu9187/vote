@@ -22,7 +22,7 @@ import java.util.Date;
 /**
  * @author SuZZ on 2018/4/24.
  */
-@WebFilter(filterName = "VoteFilter",urlPatterns = {"/api/v2/vote/*"})
+//@WebFilter(filterName = "VoteFilter",urlPatterns = {"/api/v2/vote/*"})
 public class VoteFilter implements Filter {
 
     static Logger logger  = LoggerFactory.getLogger(VoteFilter.class);
@@ -62,27 +62,19 @@ public class VoteFilter implements Filter {
         try {
             String authorization = request.getHeader("AUTHORIZATION");
             String networkId = request.getHeader("NETWORK-ID");
-            //转换成int类型
-            Integer  networkIds=Integer.valueOf(networkId);
             Cookie[] cookies = request.getCookies();
             if (StringUtils.isEmpty(networkId)) {
                 if (cookies != null && cookies.length != 0) {
                     for (Cookie cookie : cookies) {
                         if ("mx_network_id".equals(cookie.getName())) {
                             networkId = cookie.getValue();
+                             logger.info("-------mx_network_id="+cookie.getName());
                             break;
                         }
                     }
                 }
             }
             logger.info("authorization: " + authorization + " networkId: " + networkId);
-//            // FIXME network id 取不到,临时解决方案
-//            if (StringUtils.isEmpty(networkId)){
-//                networkId = "3";
-//            }
-            //把 networkId 存到 对象
-//            Network network=new Network();
-//                  network.setNetworkId(networkId);
                request.getSession().setAttribute( "networkId" ,networkId);
             if (StringUtils.isNotEmpty(networkId)) {
                 logger.info("network-id: " + networkId);
@@ -118,8 +110,10 @@ public class VoteFilter implements Filter {
                     }
                 }
                 logger.info("accountId: " + accountId);
+                Integer uid=null ;
                 //判断用户是否存在
-                Integer uid = userMapper.findUidByAccountIdAndNetWorkId(accountId, networkIds);
+                         logger.info("----accountId="+accountId+" ;networkId="+networkId+"---------");
+                        uid = userMapper.findUidByAccountIdAndNetWorkId(accountId, Integer.valueOf(networkId));
                 return uid;
             } else {
                 logger.error("The network-id is empty!");

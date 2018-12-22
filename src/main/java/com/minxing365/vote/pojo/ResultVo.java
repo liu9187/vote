@@ -19,6 +19,14 @@ public class ResultVo {
      * survey_name
      */
     private  String name;
+    /**
+     * 信息收集数据结果
+     */
+    private Integer value;
+    //获取部门
+    private  String department;
+    //获取审核标准
+    private  String auditStandard;
     public Integer getId() {
         return id;
     }
@@ -65,5 +73,29 @@ public class ResultVo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getAuditStandard() {
+        return auditStandard;
+    }
+
+    public void setAuditStandard(String auditStandard) {
+        this.auditStandard = auditStandard;
     }
 }
