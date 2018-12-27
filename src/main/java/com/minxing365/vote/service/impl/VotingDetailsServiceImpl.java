@@ -3,21 +3,27 @@ package com.minxing365.vote.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.minxing365.vote.dao.VotingDetailsMapper;
-import com.minxing365.vote.pojo.Data;
-import com.minxing365.vote.pojo.Restrict;
 import com.minxing365.vote.pojo.ResultVo;
 import com.minxing365.vote.pojo.VoteDetailsVo;
 import com.minxing365.vote.service.VotingDetailsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class VotingDetailsServiceImpl implements VotingDetailsService {
+    Logger log = LoggerFactory.getLogger(VotingDetailsServiceImpl.class);
     @Autowired
-    VotingDetailsMapper votingDetailsMapper;
+    private VotingDetailsMapper votingDetailsMapper;
+    //信息采集主题
+    @Value("${name}")
+    private String name;
 
     @Override
     public String selectVotingDetailsByName(String name) {
@@ -82,9 +88,10 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
     }
 
     @Override
-    public JSONArray selectVotingDetails2ByName(String name) {
-        String nameStr = "%" + name + "%";
-        List<VoteDetailsVo> list = votingDetailsMapper.selectVotingDetails2ByName(nameStr);
+    public JSONArray selectVotingDetails2ByName() throws UnsupportedEncodingException {
+        name = "双评双促测试";
+        log.info("获取信息采集主题:" + name);
+        List<VoteDetailsVo> list = votingDetailsMapper.selectVotingDetails2ByName(name);
         List<ResultVo> resultVoList = new ArrayList<>();
         if (list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
@@ -106,6 +113,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
                         JSONArray value = JSONObject.parseObject(ja.getJSONObject(j).getString("body")).getJSONArray("value");
                         //获取value
                         if (value.size() > 0) {
+                            // log.info("value="+value.get(0).toString());
                             resultVo.setValue(Integer.valueOf(value.get(0).toString()));
                         }
                         //获取userId
@@ -119,8 +127,16 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
 
             }
         }
+        JSONArray groupList = null;
+        try {
+            log.info("resultVoList长度=" + resultVoList.size());
+
+            groupList = getGroup(resultVoList);
+        } catch (Exception e) {
+            log.error("<<<<<<<<list 分组失败", e);
+        }
         //对数据进行分组
-       JSONArray groupList= getGroup(resultVoList);
+
         return groupList;
     }
 
@@ -250,6 +266,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
 
             String department = resultVoList.get(i).getDepartment();
             //分组
+            //  log.info("-----auditStandard"+auditStandard+";department="+department);
             if (auditStandard.equals("职能发挥") && department.equals("公司业务部")) {
                 list1_1.add(resultVoList.get(i));
             }
@@ -542,38 +559,47 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         //统计
         Integer value_1_1 = 0;
         if (list1_1.size() > 0) {
+            //log.info("list1_1"+list1_1.get(0).toString());
             for (ResultVo a : list1_1) {
-                value_1_1 = value_1_1 + a.getValue();
+                if (null != a.getValue()) {
+                    value_1_1 = value_1_1 + a.getValue();
+                }
+
             }
         }
 
         Integer value_1_2 = 0;
         if (list1_2.size() > 0) {
             for (ResultVo a : list1_2) {
+                if (null!=a.getValue())
                 value_1_2 = value_1_2 + a.getValue();
             }
         }
         Integer value_1_3 = 0;
         if (list1_3.size() > 0) {
             for (ResultVo a : list1_3) {
+                if (null!=a.getValue())
                 value_1_3 = value_1_3 + a.getValue();
             }
         }
         Integer value_1_4 = 0;
         if (list1_4.size() > 0) {
             for (ResultVo a : list1_4) {
+                if (null!=a.getValue())
                 value_1_4 = value_1_4 + a.getValue();
             }
         }
         Integer value_2_1 = 0;
         if (list2_1.size() > 0) {
             for (ResultVo a : list2_1) {
+                if (null!=a.getValue())
                 value_2_1 = value_2_1 + a.getValue();
             }
         }
         Integer value_2_2 = 0;
         if (list2_2.size() > 0) {
             for (ResultVo a : list2_2) {
+                if (null!=a.getValue())
                 value_2_2 = value_2_2 + a.getValue();
             }
         }
@@ -586,6 +612,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_2_4 = 0;
         if (list2_4.size() > 0) {
             for (ResultVo a : list2_4) {
+                if (null!=a.getValue())
                 value_2_4 = value_2_4 + a.getValue();
             }
         }
@@ -593,18 +620,21 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_3_1 = 0;
         if (list3_1.size() > 0) {
             for (ResultVo a : list3_1) {
+                if (null!=a.getValue())
                 value_3_1 = value_3_1 + a.getValue();
             }
         }
         Integer value_3_2 = 0;
         if (list3_2.size() > 0) {
             for (ResultVo a : list3_2) {
+                if (null!=a.getValue())
                 value_3_2 = value_3_2 + a.getValue();
             }
         }
         Integer value_3_3 = 0;
         if (list3_3.size() > 0) {
             for (ResultVo a : list3_3) {
+                if (null!=a.getValue())
                 value_3_3 = value_3_3 + a.getValue();
             }
         }
@@ -618,18 +648,21 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_4_1 = 0;
         if (list4_1.size() > 0) {
             for (ResultVo a : list4_1) {
+                if (null!=a.getValue())
                 value_4_1 = value_4_1 + a.getValue();
             }
         }
         Integer value_4_2 = 0;
         if (list4_2.size() > 0) {
             for (ResultVo a : list4_2) {
+                if (null!=a.getValue())
                 value_4_2 = value_4_2 + a.getValue();
             }
         }
         Integer value_4_3 = 0;
         if (list4_3.size() > 0) {
             for (ResultVo a : list4_3) {
+                if (null!=a.getValue())
                 value_4_3 = value_4_3 + a.getValue();
             }
         }
@@ -643,24 +676,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_5_1 = 0;
         if (list5_1.size() > 0) {
             for (ResultVo a : list5_1) {
+                if (null!=a.getValue())
                 value_5_1 = value_5_1 + a.getValue();
             }
         }
         Integer value_5_2 = 0;
         if (list5_2.size() > 0) {
             for (ResultVo a : list5_2) {
+                if (null!=a.getValue())
                 value_5_2 = value_5_2 + a.getValue();
             }
         }
         Integer value_5_3 = 0;
         if (list5_3.size() > 0) {
             for (ResultVo a : list5_3) {
+                if (null!=a.getValue())
                 value_5_3 = value_5_3 + a.getValue();
             }
         }
         Integer value_5_4 = 0;
         if (list5_4.size() > 0) {
             for (ResultVo a : list5_4) {
+                if (null!=a.getValue())
                 value_5_4 = value_5_4 + a.getValue();
             }
         }
@@ -674,12 +711,14 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_6_2 = 0;
         if (list6_2.size() > 0) {
             for (ResultVo a : list6_2) {
+                if (null!=a.getValue())
                 value_6_2 = value_6_2 + a.getValue();
             }
         }
         Integer value_6_3 = 0;
         if (list6_3.size() > 0) {
             for (ResultVo a : list6_3) {
+                if (null!=a.getValue())
                 value_6_3 = value_6_3 + a.getValue();
             }
         }
@@ -693,24 +732,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_7_1 = 0;
         if (list7_1.size() > 0) {
             for (ResultVo a : list7_1) {
+                if (null!=a.getValue())
                 value_7_1 = value_7_1 + a.getValue();
             }
         }
         Integer value_7_2 = 0;
         if (list7_2.size() > 0) {
             for (ResultVo a : list7_2) {
+                if (null!=a.getValue())
                 value_7_2 = value_7_2 + a.getValue();
             }
         }
         Integer value_7_3 = 0;
         if (list7_3.size() > 0) {
             for (ResultVo a : list7_3) {
+                if (null!=a.getValue())
                 value_7_3 = value_7_3 + a.getValue();
             }
         }
         Integer value_7_4 = 0;
         if (list7_4.size() > 0) {
             for (ResultVo a : list7_4) {
+                if (null!=a.getValue())
                 value_7_4 = value_7_4 + a.getValue();
             }
         }
@@ -724,18 +767,21 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_8_2 = 0;
         if (list8_2.size() > 0) {
             for (ResultVo a : list8_2) {
+                if (null!=a.getValue())
                 value_8_2 = value_8_2 + a.getValue();
             }
         }
         Integer value_8_3 = 0;
         if (list8_3.size() > 0) {
             for (ResultVo a : list8_3) {
+                if (null!=a.getValue())
                 value_8_3 = value_8_3 + a.getValue();
             }
         }
         Integer value_8_4 = 0;
         if (list8_4.size() > 0) {
             for (ResultVo a : list8_4) {
+                if (null!=a.getValue())
                 value_8_4 = value_8_4 + a.getValue();
             }
         }
@@ -743,24 +789,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_9_1 = 0;
         if (list9_1.size() > 0) {
             for (ResultVo a : list9_1) {
+                if (null!=a.getValue())
                 value_9_1 = value_9_1 + a.getValue();
             }
         }
         Integer value_9_2 = 0;
         if (list9_2.size() > 0) {
             for (ResultVo a : list9_2) {
+                if (null!=a.getValue())
                 value_9_2 = value_9_2 + a.getValue();
             }
         }
         Integer value_9_3 = 0;
         if (list9_3.size() > 0) {
             for (ResultVo a : list9_3) {
+                if (null!=a.getValue())
                 value_9_3 = value_9_3 + a.getValue();
             }
         }
         Integer value_9_4 = 0;
         if (list9_4.size() > 0) {
             for (ResultVo a : list9_4) {
+                if (null!=a.getValue())
                 value_9_4 = value_9_4 + a.getValue();
             }
         }
@@ -768,24 +818,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_10_1 = 0;
         if (list10_1.size() > 0) {
             for (ResultVo a : list10_1) {
+                if (null!=a.getValue())
                 value_10_1 = value_10_1 + a.getValue();
             }
         }
         Integer value_10_2 = 0;
         if (list10_2.size() > 0) {
             for (ResultVo a : list10_2) {
+                if (null!=a.getValue())
                 value_10_2 = value_10_2 + a.getValue();
             }
         }
         Integer value_10_3 = 0;
         if (list10_3.size() > 0) {
             for (ResultVo a : list10_3) {
+                if (null!=a.getValue())
                 value_10_3 = value_10_3 + a.getValue();
             }
         }
         Integer value_10_4 = 0;
         if (list10_4.size() > 0) {
             for (ResultVo a : list10_4) {
+                if (null!=a.getValue())
                 value_10_4 = value_10_4 + a.getValue();
             }
         }
@@ -799,6 +853,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_11_2 = 0;
         if (list11_2.size() > 0) {
             for (ResultVo a : list11_2) {
+                if (null!=a.getValue())
                 value_11_2 = value_11_2 + a.getValue();
             }
         }
@@ -811,6 +866,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_11_4 = 0;
         if (list11_4.size() > 0) {
             for (ResultVo a : list11_4) {
+                if (null!=a.getValue())
                 value_11_4 = value_11_4 + a.getValue();
             }
         }
@@ -818,6 +874,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_12_1 = 0;
         if (list12_1.size() > 0) {
             for (ResultVo a : list12_1) {
+                if (null!=a.getValue())
                 value_12_1 = value_12_1 + a.getValue();
             }
         }
@@ -830,12 +887,14 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_12_3 = 0;
         if (list12_3.size() > 0) {
             for (ResultVo a : list12_3) {
+                if (null!=a.getValue())
                 value_12_3 = value_12_3 + a.getValue();
             }
         }
         Integer value_12_4 = 0;
         if (list12_4.size() > 0) {
             for (ResultVo a : list12_4) {
+                if (null!=a.getValue())
                 value_12_4 = value_12_4 + a.getValue();
             }
         }
@@ -843,24 +902,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_13_1 = 0;
         if (list13_1.size() > 0) {
             for (ResultVo a : list13_1) {
+                if (null!=a.getValue())
                 value_13_1 = value_13_1 + a.getValue();
             }
         }
         Integer value_13_2 = 0;
         if (list13_2.size() > 0) {
             for (ResultVo a : list13_2) {
+                if (null!=a.getValue())
                 value_13_2 = value_13_2 + a.getValue();
             }
         }
         Integer value_13_3 = 0;
         if (list13_3.size() > 0) {
             for (ResultVo a : list13_3) {
+                if (null!=a.getValue())
                 value_13_3 = value_13_3 + a.getValue();
             }
         }
         Integer value_13_4 = 0;
         if (list13_4.size() > 0) {
             for (ResultVo a : list13_4) {
+                if (null!=a.getValue())
                 value_13_4 = value_13_4 + a.getValue();
             }
         }
@@ -868,6 +931,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_14_1 = 0;
         if (list14_1.size() > 0) {
             for (ResultVo a : list14_1) {
+                if (null!=a.getValue())
                 value_14_1 = value_14_1 + a.getValue();
             }
         }
@@ -880,12 +944,14 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_14_3 = 0;
         if (list14_3.size() > 0) {
             for (ResultVo a : list14_3) {
+                if (null!=a.getValue())
                 value_14_3 = value_14_3 + a.getValue();
             }
         }
         Integer value_14_4 = 0;
         if (list14_4.size() > 0) {
             for (ResultVo a : list14_4) {
+                if (null!=a.getValue())
                 value_14_4 = value_14_4 + a.getValue();
             }
         }
@@ -893,6 +959,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_15_1 = 0;
         if (list15_1.size() > 0) {
             for (ResultVo a : list15_1) {
+                if (null!=a.getValue())
                 value_15_1 = value_15_1 + a.getValue();
             }
         }
@@ -905,12 +972,14 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_15_3 = 0;
         if (list15_3.size() > 0) {
             for (ResultVo a : list15_3) {
+                if (null!=a.getValue())
                 value_15_3 = value_15_3 + a.getValue();
             }
         }
         Integer value_15_4 = 0;
         if (list15_4.size() > 0) {
             for (ResultVo a : list15_4) {
+                if (null!=a.getValue())
                 value_15_4 = value_15_4 + a.getValue();
             }
         }
@@ -918,24 +987,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_16_1 = 0;
         if (list16_1.size() > 0) {
             for (ResultVo a : list16_1) {
+                if (null!=a.getValue())
                 value_16_1 = value_16_1 + a.getValue();
             }
         }
         Integer value_16_2 = 0;
         if (list16_2.size() > 0) {
             for (ResultVo a : list16_2) {
+                if (null!=a.getValue())
                 value_16_2 = value_16_2 + a.getValue();
             }
         }
         Integer value_16_3 = 0;
         if (list16_3.size() > 0) {
             for (ResultVo a : list16_3) {
+                if (null!=a.getValue())
                 value_16_3 = value_16_3 + a.getValue();
             }
         }
         Integer value_16_4 = 0;
         if (list16_4.size() > 0) {
             for (ResultVo a : list16_4) {
+                if (null!=a.getValue())
                 value_16_4 = value_16_4 + a.getValue();
             }
         }
@@ -944,24 +1017,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_17_1 = 0;
         if (list17_1.size() > 0) {
             for (ResultVo a : list17_1) {
+                if (null!=a.getValue())
                 value_17_1 = value_17_1 + a.getValue();
             }
         }
         Integer value_17_2 = 0;
         if (list17_2.size() > 0) {
             for (ResultVo a : list17_2) {
+                if (null!=a.getValue())
                 value_17_2 = value_17_2 + a.getValue();
             }
         }
         Integer value_17_3 = 0;
         if (list17_3.size() > 0) {
             for (ResultVo a : list17_3) {
+                if (null!=a.getValue())
                 value_17_3 = value_17_3 + a.getValue();
             }
         }
         Integer value_17_4 = 0;
         if (list17_4.size() > 0) {
             for (ResultVo a : list17_4) {
+                if (null!=a.getValue())
                 value_17_4 = value_17_4 + a.getValue();
             }
         }
@@ -969,24 +1046,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_18_1 = 0;
         if (list18_1.size() > 0) {
             for (ResultVo a : list18_1) {
+                if (null!=a.getValue())
                 value_18_1 = value_18_1 + a.getValue();
             }
         }
         Integer value_18_2 = 0;
         if (list18_2.size() > 0) {
             for (ResultVo a : list18_2) {
+                if (null!=a.getValue())
                 value_18_2 = value_18_2 + a.getValue();
             }
         }
         Integer value_18_3 = 0;
         if (list18_3.size() > 0) {
             for (ResultVo a : list18_3) {
+                if (null!=a.getValue())
                 value_18_3 = value_18_3 + a.getValue();
             }
         }
         Integer value_18_4 = 0;
         if (list18_4.size() > 0) {
             for (ResultVo a : list18_4) {
+                if (null!=a.getValue())
                 value_18_4 = value_18_4 + a.getValue();
             }
         }
@@ -994,24 +1075,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_19_1 = 0;
         if (list19_1.size() > 0) {
             for (ResultVo a : list19_1) {
+                if (null!=a.getValue())
                 value_19_1 = value_19_1 + a.getValue();
             }
         }
         Integer value_19_2 = 0;
         if (list19_2.size() > 0) {
             for (ResultVo a : list19_2) {
+                if (null!=a.getValue())
                 value_19_2 = value_19_2 + a.getValue();
             }
         }
         Integer value_19_3 = 0;
         if (list19_3.size() > 0) {
             for (ResultVo a : list19_3) {
+                if (null!=a.getValue())
                 value_19_3 = value_19_3 + a.getValue();
             }
         }
         Integer value_19_4 = 0;
         if (list19_4.size() > 0) {
             for (ResultVo a : list19_4) {
+                if (null!=a.getValue())
                 value_19_4 = value_19_4 + a.getValue();
             }
         }
@@ -1019,24 +1104,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_20_1 = 0;
         if (list20_1.size() > 0) {
             for (ResultVo a : list20_1) {
+                if (null!=a.getValue())
                 value_20_1 = value_20_1 + a.getValue();
             }
         }
         Integer value_20_2 = 0;
         if (list20_2.size() > 0) {
             for (ResultVo a : list20_2) {
+                if (null!=a.getValue())
                 value_20_2 = value_20_2 + a.getValue();
             }
         }
         Integer value_20_3 = 0;
         if (list20_3.size() > 0) {
             for (ResultVo a : list20_3) {
+                if (null!=a.getValue())
                 value_20_3 = value_20_3 + a.getValue();
             }
         }
         Integer value_20_4 = 0;
         if (list20_4.size() > 0) {
             for (ResultVo a : list20_4) {
+                if (null!=a.getValue())
                 value_20_4 = value_20_4 + a.getValue();
             }
         }
@@ -1045,24 +1134,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_21_1 = 0;
         if (list21_1.size() > 0) {
             for (ResultVo a : list21_1) {
+                if (null!=a.getValue())
                 value_21_1 = value_21_1 + a.getValue();
             }
         }
         Integer value_21_2 = 0;
         if (list21_2.size() > 0) {
             for (ResultVo a : list21_2) {
+                if (null!=a.getValue())
                 value_21_2 = value_21_2 + a.getValue();
             }
         }
         Integer value_21_3 = 0;
         if (list21_3.size() > 0) {
             for (ResultVo a : list21_3) {
+                if (null!=a.getValue())
                 value_21_3 = value_21_3 + a.getValue();
             }
         }
         Integer value_21_4 = 0;
         if (list21_4.size() > 0) {
             for (ResultVo a : list21_4) {
+                if (null!=a.getValue())
                 value_21_4 = value_21_4 + a.getValue();
             }
         }
@@ -1070,24 +1163,28 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         Integer value_22_1 = 0;
         if (list22_1.size() > 0) {
             for (ResultVo a : list22_1) {
+                if (null!=a.getValue())
                 value_22_1 = value_22_1 + a.getValue();
             }
         }
         Integer value_22_2 = 0;
         if (list22_2.size() > 0) {
             for (ResultVo a : list22_2) {
+                if (null!=a.getValue())
                 value_22_2 = value_22_2 + a.getValue();
             }
         }
         Integer value_22_3 = 0;
         if (list22_3.size() > 0) {
             for (ResultVo a : list22_3) {
+                if (null!=a.getValue())
                 value_22_3 = value_22_3 + a.getValue();
             }
         }
         Integer value_22_4 = 0;
         if (list22_4.size() > 0) {
             for (ResultVo a : list22_4) {
+                if (null!=a.getValue())
                 value_22_4 = value_22_4 + a.getValue();
             }
         }
@@ -1119,160 +1216,163 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         JSONObject jb22 = new JSONObject();
 
         //封装对象
-
+        //职能发挥
+        //工作效率
+        //服务质量
+        //服务态度
         jb1.put("department", "公司业务部");
-        jb1.put("职能发挥", value_1_1);
-        jb1.put("工作效率", value_1_2);
-        jb1.put("服务质量", value_1_3);
-        jb1.put("服务态度", value_1_4);
-        jb1.put("投票人数", list1_1.size());
+        jb1.put("v1", value_1_1);
+        jb1.put("v2", value_1_2);
+        jb1.put("v3", value_1_3);
+        jb1.put("v4", value_1_4);
+        jb1.put("number", list1_1.size());
 
         jb2.put("department", "三农业务部");
-        jb2.put("职能发挥", value_2_1);
-        jb2.put("工作效率", value_2_2);
-        jb2.put("服务质量", value_2_3);
-        jb2.put("服务态度", value_2_4);
-        jb2.put("投票人数", list2_1.size());
+        jb2.put("v1", value_2_1);
+        jb2.put("v2", value_2_2);
+        jb2.put("v3", value_2_3);
+        jb2.put("v4", value_2_4);
+        jb2.put("number", list2_1.size());
 
         jb3.put("department", "电子银行部");
-        jb3.put("职能发挥", value_3_1);
-        jb3.put("工作效率", value_3_2);
-        jb3.put("服务质量", value_3_3);
-        jb3.put("服务态度", value_3_4);
-        jb3.put("投票人数", list3_1.size());
+        jb3.put("v1", value_3_1);
+        jb3.put("v2", value_3_2);
+        jb3.put("v3", value_3_3);
+        jb3.put("v4", value_3_4);
+        jb3.put("number", list3_1.size());
 
         jb4.put("department", "资金业务部");
-        jb4.put("职能发挥", value_4_1);
-        jb4.put("工作效率", value_4_2);
-        jb4.put("服务质量", value_4_3);
-        jb4.put("服务态度", value_4_4);
-        jb4.put("投票人数", list4_1.size());
+        jb4.put("v1", value_4_1);
+        jb4.put("v2", value_4_2);
+        jb4.put("v3", value_4_3);
+        jb4.put("v4", value_4_4);
+        jb4.put("number", list4_1.size());
 
         jb5.put("department", "国际业务部");
-        jb5.put("职能发挥", value_5_1);
-        jb5.put("工作效率", value_5_2);
-        jb5.put("服务质量", value_5_3);
-        jb5.put("服务态度", value_5_4);
-        jb5.put("投票人数", list5_1.size());
+        jb5.put("v1", value_5_1);
+        jb5.put("v2", value_5_2);
+        jb5.put("v3", value_5_3);
+        jb5.put("v4", value_5_4);
+        jb5.put("number", list5_1.size());
 
         jb6.put("department", "风险管理部");
-        jb6.put("职能发挥", value_6_1);
-        jb6.put("工作效率", value_6_2);
-        jb6.put("服务质量", value_6_3);
-        jb6.put("服务态度", value_6_4);
-        jb6.put("投票人数", list6_1.size());
+        jb6.put("v1", value_6_1);
+        jb6.put("v2", value_6_2);
+        jb6.put("v3", value_6_3);
+        jb6.put("v4", value_6_4);
+        jb6.put("number", list6_1.size());
 
         jb7.put("department", "运营管理部");
-        jb7.put("职能发挥", value_7_1);
-        jb7.put("工作效率", value_7_2);
-        jb7.put("服务质量", value_7_3);
-        jb7.put("服务态度", value_7_4);
-        jb7.put("投票人数", list7_1.size());
+        jb7.put("v1", value_7_1);
+        jb7.put("v2", value_7_2);
+        jb7.put("v3", value_7_3);
+        jb7.put("v4", value_7_4);
+        jb7.put("number", list7_1.size());
 
         jb8.put("department", "合规管理部");
-        jb8.put("职能发挥", value_8_1);
-        jb8.put("工作效率", value_8_2);
-        jb8.put("服务质量", value_8_3);
-        jb8.put("服务态度", value_8_4);
-        jb8.put("投票人数", list8_1.size());
+        jb8.put("v1", value_8_1);
+        jb8.put("v2", value_8_2);
+        jb8.put("v3", value_8_3);
+        jb8.put("v4", value_8_4);
+        jb8.put("number", list8_1.size());
 
         jb9.put("department", "计划财务部");
-        jb9.put("职能发挥", value_9_1);
-        jb9.put("工作效率", value_9_2);
-        jb9.put("服务质量", value_9_3);
-        jb9.put("服务态度", value_9_4);
-        jb9.put("投票人数", list9_1.size());
+        jb9.put("v1", value_9_1);
+        jb9.put("v2", value_9_2);
+        jb9.put("v3", value_9_3);
+        jb9.put("v4", value_9_4);
+        jb9.put("number", list9_1.size());
 
         jb10.put("department", "信贷管理部");
-        jb10.put("职能发挥", value_10_1);
-        jb10.put("工作效率", value_10_2);
-        jb10.put("服务质量", value_10_3);
-        jb10.put("服务态度", value_10_4);
-        jb10.put("投票人数", list10_1.size());
+        jb10.put("v1", value_10_1);
+        jb10.put("v2", value_10_2);
+        jb10.put("v3", value_10_3);
+        jb10.put("v4", value_10_4);
+        jb10.put("number", list10_1.size());
 
         jb11.put("department", "科技信息部");
-        jb11.put("职能发挥", value_11_1);
-        jb11.put("工作效率", value_11_2);
-        jb11.put("服务质量", value_11_3);
-        jb11.put("服务态度", value_11_4);
-        jb11.put("投票人数", list11_1.size());
+        jb11.put("v1", value_11_1);
+        jb11.put("v2", value_11_2);
+        jb11.put("v3", value_11_3);
+        jb11.put("v4", value_11_4);
+        jb11.put("number", list11_1.size());
 
         jb12.put("department", "人力资源部");
-        jb12.put("职能发挥", value_12_1);
-        jb12.put("工作效率", value_12_2);
-        jb12.put("服务质量", value_12_3);
-        jb12.put("服务态度", value_12_4);
-        jb12.put("投票人数", list12_1.size());
+        jb12.put("v1", value_12_1);
+        jb12.put("v2", value_12_2);
+        jb12.put("v3", value_12_3);
+        jb12.put("v4", value_12_4);
+        jb12.put("number", list12_1.size());
 
         jb13.put("department", "行长办公室");
-        jb13.put("职能发挥", value_13_1);
-        jb13.put("工作效率", value_13_2);
-        jb13.put("服务质量", value_13_3);
-        jb13.put("服务态度", value_13_4);
-        jb13.put("投票人数", list13_1.size());
+        jb13.put("v1", value_13_1);
+        jb13.put("v2", value_13_2);
+        jb13.put("v3", value_13_3);
+        jb13.put("v4", value_13_4);
+        jb13.put("number", list13_1.size());
 
         jb14.put("department", "后勤保障部");
-        jb14.put("职能发挥", value_14_1);
-        jb14.put("工作效率", value_14_2);
-        jb14.put("服务质量", value_14_3);
-        jb14.put("服务态度", value_14_4);
-        jb14.put("投票人数", list14_1.size());
+        jb14.put("v1", value_14_1);
+        jb14.put("v2", value_14_2);
+        jb14.put("v3", value_14_3);
+        jb14.put("v4", value_14_4);
+        jb14.put("number", list14_1.size());
 
         jb15.put("department", "安全保卫部");
-        jb15.put("职能发挥", value_15_1);
-        jb15.put("工作效率", value_15_2);
-        jb15.put("服务质量", value_15_3);
-        jb15.put("服务态度", value_15_4);
-        jb15.put("投票人数", list15_1.size());
+        jb15.put("v1", value_15_1);
+        jb15.put("v2", value_15_2);
+        jb15.put("v3", value_15_3);
+        jb15.put("v4", value_15_4);
+        jb15.put("number", list15_1.size());
 
         jb16.put("department", "稽核审计部");
-        jb16.put("职能发挥", value_16_1);
-        jb16.put("工作效率", value_16_2);
-        jb16.put("服务质量", value_16_3);
-        jb16.put("服务态度", value_16_4);
-        jb16.put("投票人数", list16_1.size());
+        jb16.put("v1", value_16_1);
+        jb16.put("v2", value_16_2);
+        jb16.put("v3", value_16_3);
+        jb16.put("v4", value_16_4);
+        jb16.put("number", list16_1.size());
 
         jb17.put("department", "调查统计部");
-        jb17.put("职能发挥", value_17_1);
-        jb17.put("工作效率", value_17_2);
-        jb17.put("服务质量", value_17_3);
-        jb17.put("服务态度", value_17_4);
-        jb17.put("投票人数", list17_1.size());
+        jb17.put("v1", value_17_1);
+        jb17.put("v2", value_17_2);
+        jb17.put("v3", value_17_3);
+        jb17.put("v4", value_17_4);
+        jb17.put("number", list17_1.size());
 
         jb18.put("department", "纪检监察部");
-        jb18.put("职能发挥", value_18_1);
-        jb18.put("工作效率", value_18_2);
-        jb18.put("服务质量", value_18_3);
-        jb18.put("服务态度", value_18_4);
-        jb18.put("投票人数", list18_1.size());
+        jb18.put("v1", value_18_1);
+        jb18.put("v2", value_18_2);
+        jb18.put("v3", value_18_3);
+        jb18.put("v4", value_18_4);
+        jb18.put("number", list18_1.size());
 
         jb19.put("department", "董事会办公室");
-        jb19.put("职能发挥", value_19_1);
-        jb19.put("工作效率", value_19_2);
-        jb19.put("服务质量", value_19_3);
-        jb19.put("服务态度", value_19_4);
-        jb19.put("投票人数", list19_1.size());
+        jb19.put("v1", value_19_1);
+        jb19.put("v2", value_19_2);
+        jb19.put("v3", value_19_3);
+        jb19.put("v4", value_19_4);
+        jb19.put("number", list19_1.size());
 
         jb20.put("department", "监事会办公室");
-        jb20.put("职能发挥", value_20_1);
-        jb20.put("工作效率", value_20_2);
-        jb20.put("服务质量", value_20_3);
-        jb20.put("服务态度", value_20_4);
-        jb20.put("投票人数", list20_1.size());
+        jb20.put("v1", value_20_1);
+        jb20.put("v2", value_20_2);
+        jb20.put("v3", value_20_3);
+        jb20.put("v4", value_20_4);
+        jb20.put("number", list20_1.size());
 
         jb21.put("department", "党群工作部");
-        jb21.put("职能发挥", value_21_1);
-        jb21.put("工作效率", value_21_2);
-        jb21.put("服务质量", value_21_3);
-        jb21.put("服务态度", value_21_4);
-        jb21.put("投票人数", list21_1.size());
+        jb21.put("v1", value_21_1);
+        jb21.put("v2", value_21_2);
+        jb21.put("v3", value_21_3);
+        jb21.put("v4", value_21_4);
+        jb21.put("number", list21_1.size());
 
         jb22.put("department", "工会");
-        jb22.put("职能发挥", value_22_1);
-        jb22.put("工作效率", value_22_2);
-        jb22.put("服务质量", value_22_3);
-        jb22.put("服务态度", value_22_4);
-        jb22.put("投票人数", list22_1.size());
+        jb22.put("v1", value_22_1);
+        jb22.put("v2", value_22_2);
+        jb22.put("v3", value_22_3);
+        jb22.put("v4", value_22_4);
+        jb22.put("number", list22_1.size());
 
         //加入到list当中
         jar.add(jb1);

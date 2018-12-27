@@ -22,10 +22,10 @@ import java.util.Date;
 /**
  * @author SuZZ on 2018/4/24.
  */
-//@WebFilter(filterName = "VoteFilter",urlPatterns = {"/api/v2/vote/*"})
+@WebFilter(filterName = "VoteFilter",urlPatterns = {"/api/v2/vote/*"})
 public class VoteFilter implements Filter {
 
-    static Logger logger  = LoggerFactory.getLogger(VoteFilter.class);
+    static Logger logger = LoggerFactory.getLogger(VoteFilter.class);
 
     @Autowired
     UserMapper userMapper;
@@ -42,10 +42,10 @@ public class VoteFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         // 没有session,开始校验身份
         Integer uid = findUserIdByRequestHeader(request);
-        if (uid != null){
+        if (uid != null) {
             // TODO 校验权限
-            filterChain.doFilter(request,response);
-            return ;
+            filterChain.doFilter(request, response);
+            return;
         }
         // 还是没有,返回无权限
         ((HttpServletResponse) res).setStatus(401);
@@ -68,14 +68,14 @@ public class VoteFilter implements Filter {
                     for (Cookie cookie : cookies) {
                         if ("mx_network_id".equals(cookie.getName())) {
                             networkId = cookie.getValue();
-                             logger.info("-------mx_network_id="+cookie.getName());
+                            logger.info("-------mx_network_id=" + cookie.getName());
                             break;
                         }
                     }
                 }
             }
             logger.info("authorization: " + authorization + " networkId: " + networkId);
-               request.getSession().setAttribute( "networkId" ,networkId);
+            request.getSession().setAttribute("networkId", networkId);
             if (StringUtils.isNotEmpty(networkId)) {
                 logger.info("network-id: " + networkId);
                 Oauth2AccessToken oauth2AccessToken = null;
@@ -110,10 +110,12 @@ public class VoteFilter implements Filter {
                     }
                 }
                 logger.info("accountId: " + accountId);
-                Integer uid=null ;
+
                 //判断用户是否存在
-                         logger.info("----accountId="+accountId+" ;networkId="+networkId+"---------");
-                        uid = userMapper.findUidByAccountIdAndNetWorkId(accountId, Integer.valueOf(networkId));
+                logger.info("----accountId=" + accountId + " ;networkId=" + networkId + "---------");
+                Integer uid = userMapper.findUidByAccountIdAndNetWorkId(accountId, Integer.valueOf(networkId));
+                //获取登录人id
+                request.getSession().setAttribute( "uid" ,uid);
                 return uid;
             } else {
                 logger.error("The network-id is empty!");

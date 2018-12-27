@@ -5,6 +5,7 @@ import com.minxing365.vote.pojo.ResultVo;
 import com.minxing365.vote.pojo.VoteDetailsVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
@@ -19,10 +20,9 @@ public interface VotingDetailsService {
     String selectVotingDetailsByName(@Param("name") String name);
 
     /**
-     * 根据name获取信息采集的 需要的信息
-     * @param name
+     * 获取信息采集的 需要的信息
      * @return
      */
-    JSONArray selectVotingDetails2ByName(@Param("name") String name);
+    JSONArray selectVotingDetails2ByName() throws UnsupportedEncodingException;
 
 }

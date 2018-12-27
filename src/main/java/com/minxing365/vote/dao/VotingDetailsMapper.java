@@ -27,6 +27,6 @@ public interface VotingDetailsMapper {
      * @param name
      * @return
      */
-    @Select("SELECT sa.`modify`,sa.`name`,si.user_id AS userId,si.app_id AS appId,si.forms  FROM survey_apps sa, survey_instance si WHERE sa.id = si.app_id AND sa.`name` LIKE #{name} GROUP BY user_id; ")
+    @Select("SELECT sa.`modify`,sa.`name`,si.user_id AS userId,si.app_id AS appId,si.forms  FROM survey_apps sa, survey_instance si WHERE sa.id = si.app_id AND sa.`name` =#{name} GROUP BY user_id; ")
     List<VoteDetailsVo> selectVotingDetails2ByName(@Param("name") String name);
 }

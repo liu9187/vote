@@ -2,11 +2,13 @@ package com.minxing365.vote.dao;
 import com.minxing365.vote.bean.Oauth2AccessToken;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Component;
 
 
 /**
  * Created by SZZ on 2017/5/10.
  */
+@Component
 public interface UserMapper {
     /**
      * 查询用户
@@ -35,5 +37,13 @@ public interface UserMapper {
             + "\t\tWHERE\n" + "\t\t\tnetwork_id = #{nd}\n" + "\t\tAND account_id = #{accountId}\n" + "\t)\n"
             + "AND network_id = #{nd}")
     Integer checkNetWorkAdmin(@Param("nd") String nd, @Param("accountId") Long accountId);
+
+    /**
+     * 获取登录用户名字
+     * @param uid
+     * @return
+     */
+    @Select("SELECT `name` FROM users WHERE id=#{uid} LIMIT 1;")
+    String getUserName(@Param("uid") String uid);
 
 }
