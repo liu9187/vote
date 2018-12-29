@@ -1,14 +1,16 @@
 package com.minxing365.vote.controller;
 
-import com.alibaba.fastjson.JSONArray;
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.alibaba.fastjson.JSONObject;
 import com.minxing365.vote.dao.UserMapper;
-import com.minxing365.vote.pojo.ResultVo;
+import com.minxing365.vote.pojo.excel.CountExcel;
 import com.minxing365.vote.service.VotingDetailsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +21,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2/vote")
 @Api("投票详情api文档")
 public class VoteDetailsController {
-    Logger log = LoggerFactory.getLogger(VoteDetailsController.class);
+    private Logger log = LoggerFactory.getLogger(VoteDetailsController.class);
     @Autowired
     VotingDetailsService votingDetailsService;
     @Autowired
@@ -55,27 +58,44 @@ public class VoteDetailsController {
     }
 
     /**
-     * 根据name查询数据
+     * 信息采集数据
      *
      * @return
      */
     @ApiOperation("信息采集统计")
     @RequestMapping(value = "/selectVotingDetails2ByName", method = {RequestMethod.GET})
-    public String selectVotingDetails2ByName( HttpServletRequest request) {
+    public String selectVotingDetails2ByName(HttpServletRequest request, @RequestParam(defaultValue = "0", name = "sign",required = false) Integer sign) {
         JSONObject object = new JSONObject();
         try {
-            JSONArray list = votingDetailsService.selectVotingDetails2ByName();
+            List<CountExcel> list = votingDetailsService.selectVotingDetails2ByName();
             object.put("list", list);
             String uid = String.valueOf(request.getSession().getAttribute("uid"));
-               //uid="137";
+            //uid="137";
             if (null != uid) {
                 String userName = userMapper.getUserName(uid);
-                   object.put("userName",userName);
-           }
+                object.put("userName", userName);
+            }
+//            List<CountExcel> _list = new ArrayList<>();
+//            _list.addAll(list);
+            //ExcelExportUtil 输出数据的时候 removelist 中的数据
+            if (sign == 1) {
+                try {
+                    Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams("信息采集", "信息统计"), CountExcel.class, list);
+                    FileOutputStream fo = new FileOutputStream("D:/信息采集"+"_"+System.currentTimeMillis()+".xls");
+                    workbook.write(fo);
+                    workbook.close();
+                    fo.close();
+                    object.put("message", "数据导入成功");
+                } catch (Exception e) {
+                    log.error("<<<<<<导出数据出现异常", e);
+                }
+
+            }
         } catch (Exception e) {
             log.error("<<<<<<<selectVotingDetails2ByName调用出现错误", e);
         }
         return object.toJSONString();
     }
+
 
 }

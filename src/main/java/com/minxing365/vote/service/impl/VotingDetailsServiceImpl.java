@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.minxing365.vote.dao.VotingDetailsMapper;
 import com.minxing365.vote.pojo.ResultVo;
 import com.minxing365.vote.pojo.VoteDetailsVo;
+import com.minxing365.vote.pojo.excel.CountExcel;
 import com.minxing365.vote.service.VotingDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ import java.util.List;
 
 @Service
 public class VotingDetailsServiceImpl implements VotingDetailsService {
-    Logger log = LoggerFactory.getLogger(VotingDetailsServiceImpl.class);
+ private    Logger log = LoggerFactory.getLogger(VotingDetailsServiceImpl.class);
     @Autowired
     private VotingDetailsMapper votingDetailsMapper;
     //信息采集主题
@@ -88,7 +89,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
     }
 
     @Override
-    public JSONArray selectVotingDetails2ByName() throws UnsupportedEncodingException {
+    public List<CountExcel> selectVotingDetails2ByName() throws UnsupportedEncodingException {
         name = "双评双促测试";
         log.info("获取信息采集主题:" + name);
         List<VoteDetailsVo> list = votingDetailsMapper.selectVotingDetails2ByName(name);
@@ -127,7 +128,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
 
             }
         }
-        JSONArray groupList = null;
+        List<CountExcel> groupList = null;
         try {
             log.info("resultVoList长度=" + resultVoList.size());
 
@@ -145,7 +146,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
      *
      * @param resultVoList
      */
-    private JSONArray getGroup(List<ResultVo> resultVoList) {
+    private List<CountExcel> getGroup(List<ResultVo> resultVoList) {
         //公司业务部
         //职能发挥
         List<ResultVo> list1_1 = new ArrayList<>();
@@ -1190,214 +1191,400 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
         }
 
         //输出
-        JSONArray jar = new JSONArray();
-
-        JSONObject jb1 = new JSONObject();
-        JSONObject jb2 = new JSONObject();
-        JSONObject jb3 = new JSONObject();
-        JSONObject jb4 = new JSONObject();
-        JSONObject jb5 = new JSONObject();
-        JSONObject jb6 = new JSONObject();
-        JSONObject jb7 = new JSONObject();
-        JSONObject jb8 = new JSONObject();
-        JSONObject jb9 = new JSONObject();
-        JSONObject jb10 = new JSONObject();
-        JSONObject jb11 = new JSONObject();
-        JSONObject jb12 = new JSONObject();
-        JSONObject jb13 = new JSONObject();
-        JSONObject jb14 = new JSONObject();
-        JSONObject jb15 = new JSONObject();
-        JSONObject jb16 = new JSONObject();
-        JSONObject jb17 = new JSONObject();
-        JSONObject jb18 = new JSONObject();
-        JSONObject jb19 = new JSONObject();
-        JSONObject jb20 = new JSONObject();
-        JSONObject jb21 = new JSONObject();
-        JSONObject jb22 = new JSONObject();
-
+//        JSONArray jar = new JSONArray();
+//
+//        JSONObject jb1 = new JSONObject();
+//        JSONObject jb2 = new JSONObject();
+//        JSONObject jb3 = new JSONObject();
+//        JSONObject jb4 = new JSONObject();
+//        JSONObject jb5 = new JSONObject();
+//        JSONObject jb6 = new JSONObject();
+//        JSONObject jb7 = new JSONObject();
+//        JSONObject jb8 = new JSONObject();
+//        JSONObject jb9 = new JSONObject();
+//        JSONObject jb10 = new JSONObject();
+//        JSONObject jb11 = new JSONObject();
+//        JSONObject jb12 = new JSONObject();
+//        JSONObject jb13 = new JSONObject();
+//        JSONObject jb14 = new JSONObject();
+//        JSONObject jb15 = new JSONObject();
+//        JSONObject jb16 = new JSONObject();
+//        JSONObject jb17 = new JSONObject();
+//        JSONObject jb18 = new JSONObject();
+//        JSONObject jb19 = new JSONObject();
+//        JSONObject jb20 = new JSONObject();
+//        JSONObject jb21 = new JSONObject();
+//        JSONObject jb22 = new JSONObject();
+         //封装到对象
+        List<CountExcel> list=new ArrayList<>();
+        CountExcel countExcel1=new CountExcel();
+        CountExcel countExcel2=new CountExcel();
+        CountExcel countExcel3=new CountExcel();
+        CountExcel countExcel4=new CountExcel();
+        CountExcel countExcel5=new CountExcel();
+        CountExcel countExcel6=new CountExcel();
+        CountExcel countExcel7=new CountExcel();
+        CountExcel countExcel8=new CountExcel();
+        CountExcel countExcel9=new CountExcel();
+        CountExcel countExcel10=new CountExcel();
+        CountExcel countExcel11=new CountExcel();
+        CountExcel countExcel12=new CountExcel();
+        CountExcel countExcel13=new CountExcel();
+        CountExcel countExcel14=new CountExcel();
+        CountExcel countExcel15=new CountExcel();
+        CountExcel countExcel16=new CountExcel();
+        CountExcel countExcel17=new CountExcel();
+        CountExcel countExcel18=new CountExcel();
+        CountExcel countExcel19=new CountExcel();
+        CountExcel countExcel20=new CountExcel();
+        CountExcel countExcel21=new CountExcel();
+        CountExcel countExcel22=new CountExcel();
         //封装对象
         //职能发挥
         //工作效率
         //服务质量
         //服务态度
-        jb1.put("department", "公司业务部");
-        jb1.put("v1", value_1_1);
-        jb1.put("v2", value_1_2);
-        jb1.put("v3", value_1_3);
-        jb1.put("v4", value_1_4);
-        jb1.put("number", list1_1.size());
+//        jb1.put("department", "公司业务部");
+//        jb1.put("v1", value_1_1);
+//        jb1.put("v2", value_1_2);
+//        jb1.put("v3", value_1_3);
+//        jb1.put("v4", value_1_4);
+//        jb1.put("number", list1_1.size());
 
-        jb2.put("department", "三农业务部");
-        jb2.put("v1", value_2_1);
-        jb2.put("v2", value_2_2);
-        jb2.put("v3", value_2_3);
-        jb2.put("v4", value_2_4);
-        jb2.put("number", list2_1.size());
+        countExcel1.setDepartment("公司业务部");
+        countExcel1.setNumber(list1_1.size());
+        countExcel1.setV1(value_1_1);
+        countExcel1.setV2(value_1_2);
+        countExcel1.setV3(value_1_3);
+        countExcel1.setV4(value_1_4);
 
-        jb3.put("department", "电子银行部");
-        jb3.put("v1", value_3_1);
-        jb3.put("v2", value_3_2);
-        jb3.put("v3", value_3_3);
-        jb3.put("v4", value_3_4);
-        jb3.put("number", list3_1.size());
+//        jb2.put("department", "三农业务部");
+//        jb2.put("v1", value_2_1);
+//        jb2.put("v2", value_2_2);
+//        jb2.put("v3", value_2_3);
+//        jb2.put("v4", value_2_4);
+//        jb2.put("number", list2_1.size());
+        countExcel2.setDepartment("三农业务部");
+        countExcel2.setNumber(list2_1.size());
+        countExcel2.setV1(value_2_1);
+        countExcel2.setV2(value_2_2);
+        countExcel2.setV3(value_2_3);
+        countExcel2.setV4(value_2_4);
+//
+//        jb3.put("department", "电子银行部");
+//        jb3.put("v1", value_3_1);
+//        jb3.put("v2", value_3_2);
+//        jb3.put("v3", value_3_3);
+//        jb3.put("v4", value_3_4);
+//        jb3.put("number", list3_1.size());
+        countExcel3.setDepartment("电子银行部");
+        countExcel3.setNumber(list3_1.size());
+        countExcel3.setV1(value_3_1);
+        countExcel3.setV2(value_3_2);
+        countExcel3.setV3(value_3_3);
+        countExcel3.setV4(value_3_4);
 
-        jb4.put("department", "资金业务部");
-        jb4.put("v1", value_4_1);
-        jb4.put("v2", value_4_2);
-        jb4.put("v3", value_4_3);
-        jb4.put("v4", value_4_4);
-        jb4.put("number", list4_1.size());
+//        jb4.put("department", "资金业务部");
+//        jb4.put("v1", value_4_1);
+//        jb4.put("v2", value_4_2);
+//        jb4.put("v3", value_4_3);
+//        jb4.put("v4", value_4_4);
+//        jb4.put("number", list4_1.size());
+        countExcel4.setDepartment("资金业务部");
+        countExcel4.setNumber(list4_1.size());
+        countExcel4.setV1(value_4_1);
+        countExcel4.setV2(value_4_2);
+        countExcel4.setV3(value_4_3);
+        countExcel4.setV4(value_4_4);
 
-        jb5.put("department", "国际业务部");
-        jb5.put("v1", value_5_1);
-        jb5.put("v2", value_5_2);
-        jb5.put("v3", value_5_3);
-        jb5.put("v4", value_5_4);
-        jb5.put("number", list5_1.size());
 
-        jb6.put("department", "风险管理部");
-        jb6.put("v1", value_6_1);
-        jb6.put("v2", value_6_2);
-        jb6.put("v3", value_6_3);
-        jb6.put("v4", value_6_4);
-        jb6.put("number", list6_1.size());
+//        jb5.put("department", "国际业务部");
+//        jb5.put("v1", value_5_1);
+//        jb5.put("v2", value_5_2);
+//        jb5.put("v3", value_5_3);
+//        jb5.put("v4", value_5_4);
+//        jb5.put("number", list5_1.size());
+        countExcel5.setDepartment("国际业务部");
+        countExcel5.setNumber(list5_1.size());
+        countExcel5.setV1(value_5_1);
+        countExcel5.setV2(value_5_2);
+        countExcel5.setV3(value_5_3);
+        countExcel5.setV4(value_5_4);
 
-        jb7.put("department", "运营管理部");
-        jb7.put("v1", value_7_1);
-        jb7.put("v2", value_7_2);
-        jb7.put("v3", value_7_3);
-        jb7.put("v4", value_7_4);
-        jb7.put("number", list7_1.size());
+//        jb6.put("department", "风险管理部");
+//        jb6.put("v1", value_6_1);
+//        jb6.put("v2", value_6_2);
+//        jb6.put("v3", value_6_3);
+//        jb6.put("v4", value_6_4);
+//        jb6.put("number", list6_1.size());
+        countExcel6.setDepartment("风险管理部");
+        countExcel6.setNumber(list6_1.size());
+        countExcel6.setV1(value_6_1);
+        countExcel6.setV2(value_6_2);
+        countExcel6.setV3(value_6_3);
+        countExcel6.setV4(value_6_4);
 
-        jb8.put("department", "合规管理部");
-        jb8.put("v1", value_8_1);
-        jb8.put("v2", value_8_2);
-        jb8.put("v3", value_8_3);
-        jb8.put("v4", value_8_4);
-        jb8.put("number", list8_1.size());
+//        jb7.put("department", "运营管理部");
+//        jb7.put("v1", value_7_1);
+//        jb7.put("v2", value_7_2);
+//        jb7.put("v3", value_7_3);
+//        jb7.put("v4", value_7_4);
+//        jb7.put("number", list7_1.size());
+        countExcel7.setDepartment("运营管理部");
+        countExcel7.setNumber(list7_1.size());
+        countExcel7.setV1(value_7_1);
+        countExcel7.setV2(value_7_2);
+        countExcel7.setV3(value_7_3);
+        countExcel7.setV4(value_7_4);
 
-        jb9.put("department", "计划财务部");
-        jb9.put("v1", value_9_1);
-        jb9.put("v2", value_9_2);
-        jb9.put("v3", value_9_3);
-        jb9.put("v4", value_9_4);
-        jb9.put("number", list9_1.size());
+//        jb8.put("department", "合规管理部");
+//        jb8.put("v1", value_8_1);
+//        jb8.put("v2", value_8_2);
+//        jb8.put("v3", value_8_3);
+//        jb8.put("v4", value_8_4);
+//        jb8.put("number", list8_1.size());
+        countExcel8.setDepartment("合规管理部");
+        countExcel8.setNumber(list8_1.size());
+        countExcel8.setV1(value_8_1);
+        countExcel8.setV2(value_8_2);
+        countExcel8.setV3(value_8_3);
+        countExcel8.setV4(value_8_4);
 
-        jb10.put("department", "信贷管理部");
-        jb10.put("v1", value_10_1);
-        jb10.put("v2", value_10_2);
-        jb10.put("v3", value_10_3);
-        jb10.put("v4", value_10_4);
-        jb10.put("number", list10_1.size());
+//        jb9.put("department", "计划财务部");
+//        jb9.put("v1", value_9_1);
+//        jb9.put("v2", value_9_2);
+//        jb9.put("v3", value_9_3);
+//        jb9.put("v4", value_9_4);
+//        jb9.put("number", list9_1.size());
+        countExcel9.setDepartment("计划财务部");
+        countExcel9.setNumber(list9_1.size());
+        countExcel9.setV1(value_9_1);
+        countExcel9.setV2(value_9_2);
+        countExcel9.setV3(value_9_3);
+        countExcel9.setV4(value_9_4);
 
-        jb11.put("department", "科技信息部");
-        jb11.put("v1", value_11_1);
-        jb11.put("v2", value_11_2);
-        jb11.put("v3", value_11_3);
-        jb11.put("v4", value_11_4);
-        jb11.put("number", list11_1.size());
+//        jb10.put("department", "信贷管理部");
+//        jb10.put("v1", value_10_1);
+//        jb10.put("v2", value_10_2);
+//        jb10.put("v3", value_10_3);
+//        jb10.put("v4", value_10_4);
+//        jb10.put("number", list10_1.size());
+        countExcel10.setDepartment("信贷管理部");
+        countExcel10.setNumber(list10_1.size());
+        countExcel10.setV1(value_10_1);
+        countExcel10.setV2(value_10_2);
+        countExcel10.setV3(value_10_3);
+        countExcel10.setV4(value_10_4);
 
-        jb12.put("department", "人力资源部");
-        jb12.put("v1", value_12_1);
-        jb12.put("v2", value_12_2);
-        jb12.put("v3", value_12_3);
-        jb12.put("v4", value_12_4);
-        jb12.put("number", list12_1.size());
+//        jb11.put("department", "科技信息部");
+//        jb11.put("v1", value_11_1);
+//        jb11.put("v2", value_11_2);
+//        jb11.put("v3", value_11_3);
+//        jb11.put("v4", value_11_4);
+//        jb11.put("number", list11_1.size());
+        countExcel11.setDepartment("科技信息部");
+        countExcel11.setNumber(list11_1.size());
+        countExcel11.setV1(value_11_1);
+        countExcel11.setV2(value_11_2);
+        countExcel11.setV3(value_11_3);
+        countExcel11.setV4(value_11_4);
 
-        jb13.put("department", "行长办公室");
-        jb13.put("v1", value_13_1);
-        jb13.put("v2", value_13_2);
-        jb13.put("v3", value_13_3);
-        jb13.put("v4", value_13_4);
-        jb13.put("number", list13_1.size());
+//        jb12.put("department", "人力资源部");
+//        jb12.put("v1", value_12_1);
+//        jb12.put("v2", value_12_2);
+//        jb12.put("v3", value_12_3);
+//        jb12.put("v4", value_12_4);
+//        jb12.put("number", list12_1.size());
+        countExcel12.setDepartment("人力资源部");
+        countExcel12.setNumber(list12_1.size());
+        countExcel12.setV1(value_12_1);
+        countExcel12.setV2(value_12_2);
+        countExcel12.setV3(value_12_3);
+        countExcel12.setV4(value_12_4);
 
-        jb14.put("department", "后勤保障部");
-        jb14.put("v1", value_14_1);
-        jb14.put("v2", value_14_2);
-        jb14.put("v3", value_14_3);
-        jb14.put("v4", value_14_4);
-        jb14.put("number", list14_1.size());
 
-        jb15.put("department", "安全保卫部");
-        jb15.put("v1", value_15_1);
-        jb15.put("v2", value_15_2);
-        jb15.put("v3", value_15_3);
-        jb15.put("v4", value_15_4);
-        jb15.put("number", list15_1.size());
+//        jb13.put("department", "行长办公室");
+//        jb13.put("v1", value_13_1);
+//        jb13.put("v2", value_13_2);
+//        jb13.put("v3", value_13_3);
+//        jb13.put("v4", value_13_4);
+//        jb13.put("number", list13_1.size());
+        countExcel13.setDepartment("行长办公室");
+        countExcel13.setNumber(list13_1.size());
+        countExcel13.setV1(value_13_1);
+        countExcel13.setV2(value_13_2);
+        countExcel13.setV3(value_13_3);
+        countExcel13.setV4(value_13_4);
 
-        jb16.put("department", "稽核审计部");
-        jb16.put("v1", value_16_1);
-        jb16.put("v2", value_16_2);
-        jb16.put("v3", value_16_3);
-        jb16.put("v4", value_16_4);
-        jb16.put("number", list16_1.size());
+//        jb14.put("department", "后勤保障部");
+//        jb14.put("v1", value_14_1);
+//        jb14.put("v2", value_14_2);
+//        jb14.put("v3", value_14_3);
+//        jb14.put("v4", value_14_4);
+//        jb14.put("number", list14_1.size());
+        countExcel14.setDepartment("后勤保障部");
+        countExcel14.setNumber(list14_1.size());
+        countExcel14.setV1(value_14_1);
+        countExcel14.setV2(value_14_2);
+        countExcel14.setV3(value_14_3);
+        countExcel14.setV4(value_14_4);
 
-        jb17.put("department", "调查统计部");
-        jb17.put("v1", value_17_1);
-        jb17.put("v2", value_17_2);
-        jb17.put("v3", value_17_3);
-        jb17.put("v4", value_17_4);
-        jb17.put("number", list17_1.size());
+//        jb15.put("department", "安全保卫部");
+//        jb15.put("v1", value_15_1);
+//        jb15.put("v2", value_15_2);
+//        jb15.put("v3", value_15_3);
+//        jb15.put("v4", value_15_4);
+//        jb15.put("number", list15_1.size());
+        countExcel15.setDepartment("安全保卫部");
+        countExcel15.setNumber(list15_1.size());
+        countExcel15.setV1(value_15_1);
+        countExcel15.setV2(value_15_2);
+        countExcel15.setV3(value_15_3);
+        countExcel15.setV4(value_15_4);
 
-        jb18.put("department", "纪检监察部");
-        jb18.put("v1", value_18_1);
-        jb18.put("v2", value_18_2);
-        jb18.put("v3", value_18_3);
-        jb18.put("v4", value_18_4);
-        jb18.put("number", list18_1.size());
 
-        jb19.put("department", "董事会办公室");
-        jb19.put("v1", value_19_1);
-        jb19.put("v2", value_19_2);
-        jb19.put("v3", value_19_3);
-        jb19.put("v4", value_19_4);
-        jb19.put("number", list19_1.size());
+//        jb16.put("department", "稽核审计部");
+//        jb16.put("v1", value_16_1);
+//        jb16.put("v2", value_16_2);
+//        jb16.put("v3", value_16_3);
+//        jb16.put("v4", value_16_4);
+//        jb16.put("number", list16_1.size());
+        countExcel16.setDepartment("稽核审计部");
+        countExcel16.setNumber(list16_1.size());
+        countExcel16.setV1(value_16_1);
+        countExcel16.setV2(value_16_2);
+        countExcel16.setV3(value_16_3);
+        countExcel16.setV4(value_16_4);
 
-        jb20.put("department", "监事会办公室");
-        jb20.put("v1", value_20_1);
-        jb20.put("v2", value_20_2);
-        jb20.put("v3", value_20_3);
-        jb20.put("v4", value_20_4);
-        jb20.put("number", list20_1.size());
+//        jb17.put("department", "调查统计部");
+//        jb17.put("v1", value_17_1);
+//        jb17.put("v2", value_17_2);
+//        jb17.put("v3", value_17_3);
+//        jb17.put("v4", value_17_4);
+//        jb17.put("number", list17_1.size());
+        countExcel17.setDepartment("调查统计部");
+        countExcel17.setNumber(list17_1.size());
+        countExcel17.setV1(value_17_1);
+        countExcel17.setV2(value_17_2);
+        countExcel17.setV3(value_17_3);
+        countExcel17.setV4(value_17_4);
 
-        jb21.put("department", "党群工作部");
-        jb21.put("v1", value_21_1);
-        jb21.put("v2", value_21_2);
-        jb21.put("v3", value_21_3);
-        jb21.put("v4", value_21_4);
-        jb21.put("number", list21_1.size());
+//        jb18.put("department", "纪检监察部");
+//        jb18.put("v1", value_18_1);
+//        jb18.put("v2", value_18_2);
+//        jb18.put("v3", value_18_3);
+//        jb18.put("v4", value_18_4);
+//        jb18.put("number", list18_1.size());
+        countExcel18.setDepartment("纪检监察部");
+        countExcel18.setNumber(list18_1.size());
+        countExcel18.setV1(value_18_1);
+        countExcel18.setV2(value_18_2);
+        countExcel18.setV3(value_18_3);
+        countExcel18.setV4(value_18_4);
 
-        jb22.put("department", "工会");
-        jb22.put("v1", value_22_1);
-        jb22.put("v2", value_22_2);
-        jb22.put("v3", value_22_3);
-        jb22.put("v4", value_22_4);
-        jb22.put("number", list22_1.size());
+//        jb19.put("department", "董事会办公室");
+//        jb19.put("v1", value_19_1);
+//        jb19.put("v2", value_19_2);
+//        jb19.put("v3", value_19_3);
+//        jb19.put("v4", value_19_4);
+//        jb19.put("number", list19_1.size());
+        countExcel19.setDepartment("董事会办公室");
+        countExcel19.setNumber(list19_1.size());
+        countExcel19.setV1(value_19_1);
+        countExcel19.setV2(value_19_2);
+        countExcel19.setV3(value_19_3);
+        countExcel19.setV4(value_19_4);
+
+
+//        jb20.put("department", "监事会办公室");
+//        jb20.put("v1", value_20_1);
+//        jb20.put("v2", value_20_2);
+//        jb20.put("v3", value_20_3);
+//        jb20.put("v4", value_20_4);
+//        jb20.put("number", list20_1.size());
+        countExcel20.setDepartment("监事会办公室");
+        countExcel20.setNumber(list20_1.size());
+        countExcel20.setV1(value_20_1);
+        countExcel20.setV2(value_20_2);
+        countExcel20.setV3(value_20_3);
+        countExcel20.setV4(value_20_4);
+
+
+//        jb21.put("department", "党群工作部");
+//        jb21.put("v1", value_21_1);
+//        jb21.put("v2", value_21_2);
+//        jb21.put("v3", value_21_3);
+//        jb21.put("v4", value_21_4);
+//        jb21.put("number", list21_1.size());
+        countExcel21.setDepartment("党群工作部");
+        countExcel21.setNumber(list21_1.size());
+        countExcel21.setV1(value_21_1);
+        countExcel21.setV2(value_21_2);
+        countExcel21.setV3(value_21_3);
+        countExcel21.setV4(value_21_4);
+
+//        jb22.put("department", "工会");
+//        jb22.put("v1", value_22_1);
+//        jb22.put("v2", value_22_2);
+//        jb22.put("v3", value_22_3);
+//        jb22.put("v4", value_22_4);
+//        jb22.put("number", list22_1.size());
+        countExcel22.setDepartment("工会");
+        countExcel22.setNumber(list22_1.size());
+        countExcel22.setV1(value_22_1);
+        countExcel22.setV2(value_22_2);
+        countExcel22.setV3(value_22_3);
+        countExcel22.setV4(value_22_4);
 
         //加入到list当中
-        jar.add(jb1);
-        jar.add(jb2);
-        jar.add(jb3);
-        jar.add(jb4);
-        jar.add(jb5);
-        jar.add(jb6);
-        jar.add(jb7);
-        jar.add(jb8);
-        jar.add(jb9);
-        jar.add(jb10);
-        jar.add(jb11);
-        jar.add(jb12);
-        jar.add(jb13);
-        jar.add(jb14);
-        jar.add(jb15);
-        jar.add(jb16);
-        jar.add(jb17);
-        jar.add(jb18);
-        jar.add(jb19);
-        jar.add(jb20);
-        jar.add(jb21);
-        jar.add(jb22);
-        return jar;
+//        jar.add(jb1);
+//        jar.add(jb2);
+//        jar.add(jb3);
+//        jar.add(jb4);
+//        jar.add(jb5);
+//        jar.add(jb6);
+//        jar.add(jb7);
+//        jar.add(jb8);
+//        jar.add(jb9);
+//        jar.add(jb10);
+//        jar.add(jb11);
+//        jar.add(jb12);
+//        jar.add(jb13);
+//        jar.add(jb14);
+//        jar.add(jb15);
+//        jar.add(jb16);
+//        jar.add(jb17);
+//        jar.add(jb18);
+//        jar.add(jb19);
+//        jar.add(jb20);
+//        jar.add(jb21);
+//        jar.add(jb22);
+
+        list.add(countExcel1);
+        list.add(countExcel2);
+        list.add(countExcel3);
+        list.add(countExcel4);
+        list.add(countExcel5);
+        list.add(countExcel6);
+        list.add(countExcel7);
+        list.add(countExcel8);
+        list.add(countExcel9);
+        list.add(countExcel10);
+        list.add(countExcel11);
+        list.add(countExcel12);
+        list.add(countExcel13);
+        list.add(countExcel14);
+        list.add(countExcel15);
+        list.add(countExcel16);
+        list.add(countExcel17);
+        list.add(countExcel18);
+        list.add(countExcel19);
+        list.add(countExcel20);
+        list.add(countExcel21);
+        list.add(countExcel22);
+
+
+        return list;
 
     }
 }
