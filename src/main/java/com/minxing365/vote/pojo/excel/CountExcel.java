@@ -3,8 +3,9 @@ package com.minxing365.vote.pojo.excel;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
-public class CountExcel implements Serializable {
+public class CountExcel implements Serializable ,Comparator<CountExcel> {
     @Excel(name = "公司部门")
     private String department;
     @Excel(name = "职能发挥")
@@ -17,18 +18,22 @@ public class CountExcel implements Serializable {
     private Integer v4;
     @Excel(name = "人数")
     private Integer number;
-
-    public CountExcel(String department, Integer v1, Integer v2, Integer v3, Integer v4, Integer number) {
+    @Excel(name = "平均分")
+    private double average;
+    public CountExcel(String department, Integer v1, Integer v2, Integer v3, Integer v4, Integer number,double average) {
         this.department = department;
         this.v1 = v1;
         this.v2 = v2;
         this.v3 = v3;
         this.v4 = v4;
         this.number = number;
+        this.average=average;
     }
 
     public CountExcel() {
     }
+
+
 
     public String getDepartment() {
         return department;
@@ -76,5 +81,21 @@ public class CountExcel implements Serializable {
 
     public void setNumber(Integer number) {
         this.number = number;
+    }
+
+    public double getAverage() {
+        return average;
+    }
+
+    public void setAverage(double average) {
+        this.average = average;
+    }
+
+    @Override
+    public int compare(CountExcel o1, CountExcel o2) {
+          if (o1.getAverage()>o2.getAverage()){
+              return -1;
+          }
+        return 1;
     }
 }

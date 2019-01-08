@@ -70,7 +70,7 @@ public class VoteDetailsController {
             List<CountExcel> list = votingDetailsService.selectVotingDetails2ByName();
             object.put("list", list);
             String uid = String.valueOf(request.getSession().getAttribute("uid"));
-            //uid="137";
+          //  uid="137";
             if (null != uid) {
                 String userName = userMapper.getUserName(uid);
                 object.put("userName", userName);
