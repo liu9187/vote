@@ -22,8 +22,8 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
     @Autowired
     private VotingDetailsMapper votingDetailsMapper;
     //信息采集主题
-//    @Value("${name}")
-//    private String name;
+    @Value("${name}")
+    private String name;
 
     @Override
     public String selectVotingDetailsByName(String name) {
@@ -89,7 +89,7 @@ public class VotingDetailsServiceImpl implements VotingDetailsService {
 
     @Override
     public List<CountExcel> selectVotingDetails2ByName() throws UnsupportedEncodingException {
-        String   name = "2019双测双评民主评测测试";
+      //  String   name = "2019双测双评民主评测测试";
         log.info("获取信息采集主题:" + name);
         List<VoteDetailsVo> list = votingDetailsMapper.selectVotingDetails2ByName(name);
         List<ResultVo> resultVoList = new ArrayList<>();

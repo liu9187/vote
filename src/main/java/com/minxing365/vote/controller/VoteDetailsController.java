@@ -63,6 +63,7 @@ public class VoteDetailsController {
      * @return
      */
     @ApiOperation("信息采集统计")
+    @ApiImplicitParams(@ApiImplicitParam(paramType = "query", name = "sign", dataType = "String", defaultValue = "0",value = "下载excel标识"))
     @RequestMapping(value = "/selectVotingDetails2ByName", method = {RequestMethod.GET})
     public String selectVotingDetails2ByName(HttpServletRequest request, @RequestParam(defaultValue = "0", name = "sign",required = false) Integer sign) {
         JSONObject object = new JSONObject();

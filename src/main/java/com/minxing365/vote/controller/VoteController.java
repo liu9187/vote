@@ -36,14 +36,10 @@ import java.util.UUID;
 @Api("投票项目api文档")
 public class VoteController {
     private Logger log = LoggerFactory.getLogger(VoteController.class);
-
     @Autowired
     private VoteService voteService;
     @Value("${img.location}")
     private String location;
-    @Value("${name}")
-    private String name;
-
     /**
      * 保存主表
      *
@@ -841,12 +837,5 @@ public class VoteController {
             }
         }
     }
-    @ApiOperation("测试")
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
-    @ResponseBody
-    public String test(){
-         log.info("name="+name);
-         String result=name;
-         return  result;
-    }
+
 }
