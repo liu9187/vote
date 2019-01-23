@@ -4,18 +4,21 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.minxing365.vote.bean.AnswerTable;
+import com.minxing365.vote.bean.OptionSublistTable;
 import com.minxing365.vote.bean.OptionTable;
 import com.minxing365.vote.bean.VoteMainTable;
 import com.minxing365.vote.dao.VoteMapper;
 import com.minxing365.vote.pojo.AnswerCount;
 import com.minxing365.vote.pojo.VoteAndOption;
 import com.minxing365.vote.pojo.VoteCount;
+import com.minxing365.vote.service.TimerService;
 import com.minxing365.vote.service.VoteService;
 import com.minxing365.vote.util.JnbEsbUtil;
 import com.minxing365.vote.util.PageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,37 +30,41 @@ public class VoteServiceImpl implements VoteService {
     Logger log = LoggerFactory.getLogger(VoteServiceImpl.class);
     @Autowired
     private VoteMapper voteMapper;
+    @Autowired
+    private TimerService timerService;
+    @Value("${defaultVale}")
+    private int defaultVale;
 
     @Override
     @Transactional
-    public Integer insertVoteMainTable(VoteMainTable voteMainTable) {
+    public String insertVoteMainTable(VoteMainTable voteMainTable) {
         //根据id查询主表内容
         //  VoteMainTable voteMainTable=null;
-        Integer re = null;
+        String id = null;
         try {
             //   voteMainTable= voteMapper.selectVoteMainTableById( id );
             //新增主表
-            re = voteMapper.insertVoteMainTable(voteMainTable);
+            Integer re = voteMapper.insertVoteMainTable(voteMainTable);
             if (re > 0) {
                 log.info("----新增主表成功----");
-                String voteTitle = voteMainTable.getVoteTitle();
+                //    String voteTitle = voteMainTable.getVoteTitle();
                 //接口进行发布
-                Integer result = null;
-                if (null != voteMainTable.getId()) {
-                    result = voteMapper.updateState(voteMainTable.getId());
-                } else {
-                    log.error("<<<<<主表发布失败");
-                    return null;
-                }
+//                Integer result = null;
+//                if (null != voteMainTable.getId()) {
+//                    result = voteMapper.updateState(voteMainTable.getId());
+//                } else {
+//                    log.error("<<<<<主表发布失败");
+//                    return null;
+//                }
                 //获取id
-                String id = voteMainTable.getId();
-                if (result > 0) {
-                    //状态更新成功，可以发布消息
-                    // 发布消息接口
-                    log.info("-------消息推送开始");
-                    Thread thread = new Thread(() -> PushMessage.sendOcuMessageToUsers("投票通知", voteTitle, id));
-                    thread.start();
-                }
+                id = voteMainTable.getId();
+//                if (result > 0) {
+//                    //状态更新成功，可以发布消息
+//                    // 发布消息接口
+//                    log.info("-------消息推送开始");
+//                    Thread thread = new Thread(() -> PushMessage.sendOcuMessageToUsers("投票通知", voteTitle, id));
+//                    thread.start();
+//                }
             } else {
                 log.error("<<<<<主表新增异常");
                 return null;
@@ -65,7 +72,7 @@ public class VoteServiceImpl implements VoteService {
         } catch (Exception e) {
             log.error("发布消息出现异常", e);
         }
-        return re;
+        return id;
     }
 
     @Override
@@ -117,33 +124,45 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     @Transactional
-    public Integer updateVoteMainTable(String voteTitle, Long endTime, String id) {
-        return voteMapper.updateVoteMainTable(voteTitle, endTime, id);
+    public Integer updateVoteMainTable(String voteTitle, String describes, String remarks, Long startTime, Long endTime, String id) {
+        return voteMapper.updateVoteMainTable(voteTitle, describes, remarks, startTime, endTime, id);
     }
 
     @Override
     @Transactional
-    public Integer updateOptionTable(String optionTitle, String pictureUrl, String viewUrl, Integer optionFlag, String remarks, Integer id) {
-        return voteMapper.updateOptionTable(optionTitle, pictureUrl, viewUrl, optionFlag, remarks, id);
+    public Integer updateOptionTable(String optionTitle, String pictureUrl, String remarks, String department, Integer id) {
+        return voteMapper.updateOptionTable(optionTitle, pictureUrl, remarks, department, id);
     }
 
     @Override
     @Transactional
     public Integer updateState(String id) {
         Integer result = voteMapper.updateState(id);
+        log.info("------id==" + id);
         //根据id查询主表内容
         VoteMainTable voteMainTable = null;
+        log.info("----result1=" + result);
         try {
             voteMainTable = voteMapper.selectVoteMainTableById(id);
         } catch (Exception e) {
-
+            log.error("<<<<<<查询主表信息失败", e);
         }
         if (result > 0) {
             String voteTitle = voteMainTable.getVoteTitle();
+            Long endTime = voteMainTable.getEndTime();
             log.info("-------消息推送开始");
             //发布消息接口
-            Thread thread = new Thread(() -> PushMessage.sendOcuMessageToUsers("投票通知", voteTitle, id));
+            Thread thread = new Thread(() -> PushMessage.sendOcuMessageToUsers("投票通知", voteTitle, id, endTime));
             thread.start();
+            //开启定时任务
+
+            try {
+                timerService.overdueVotingService(id, endTime);
+            } catch (Exception e) {
+                log.error("<<<<<<<发布消息定时任务异常", e);
+            }
+
+
         }
 
         return result;
@@ -158,7 +177,19 @@ public class VoteServiceImpl implements VoteService {
             Integer main = voteMapper.deleteVoteMainTable(id);
             //删除选择表
             if (main > 0) {
-                voteMapper.deleteOptionTable(id);
+                //判断是不是存在选择表
+                List<OptionTable> list = voteMapper.selectOptionTableByvoteId(id);
+                if (list.size() > 0) {
+                    Integer in = voteMapper.deleteOptionTable(id);
+                    if (in > 0) {
+                        //判断选择表字表是否有数据
+                        for (int i = 0; i < list.size(); i++) {
+                            voteMapper.updateSublist(list.get(i).getId());
+                        }
+                    }
+
+                }
+
                 object.put("message", "删除成功");
                 log.info("-----删除成功");
             } else {
@@ -249,9 +280,9 @@ public class VoteServiceImpl implements VoteService {
                             //添加视频路径到视图
                             answerCount.setPictureUrl(pictureUrl);
                             //获取视频路径
-                            String viewUrl = optionList.get(j).getViewUrl();
-                            //视频添加到视图
-                            answerCount.setViewUrl(viewUrl);
+//                            String viewUrl = optionList.get(j).getViewUrl();
+//                            //视频添加到视图
+//                            answerCount.setViewUrl(viewUrl);
                             //选择表备注
                             String remarks = optionList.get(j).getRemarks();
                             answerCount.setRemarks(remarks);
@@ -265,7 +296,7 @@ public class VoteServiceImpl implements VoteService {
                     }
                     //list 封装到 对象
                     PageUtils<AnswerCount> pageUtils = new PageUtils<>(pageNum1, pageSize1, list);
-                    voteCount.setList(pageUtils.getList());
+                    voteCount.setListOption(pageUtils.getList());
                     voteCount.setPages(pageUtils.getPages());
                     voteCount.setTotal(pageUtils.getTotal());
                     //封装到显示list
@@ -321,7 +352,7 @@ public class VoteServiceImpl implements VoteService {
                 }
 
                 //答案统计列表
-                List<AnswerCount> list = new ArrayList<>();
+                List<AnswerCount> listOption = new ArrayList<>();
                 //根据主表id调用选择表信息
                 //获取选择表信息
                 List<OptionTable> optionList = voteMapper.selectOptionTableByvoteId(id);
@@ -345,9 +376,12 @@ public class VoteServiceImpl implements VoteService {
                         //添加视频路径到视图
                         answerCount.setPictureUrl(pictureUrl);
                         //获取视频路径
-                        String viewUrl = optionList.get(j).getViewUrl();
+                        //  String viewUrl = optionList.get(j).getViewUrl();
                         //视频添加到视图
-                        answerCount.setViewUrl(viewUrl);
+                        //  answerCount.setViewUrl(viewUrl);
+                        //获取部门信息
+                        String department = optionList.get(j).getDepartment();
+                        answerCount.setDepartment(department);
                         //选择表备注
                         String remarks = optionList.get(j).getRemarks();
                         answerCount.setRemarks(remarks);
@@ -355,21 +389,33 @@ public class VoteServiceImpl implements VoteService {
                         Integer count = voteMapper.selectCount(optionId);
                         //答案总条数 添加到 list
                         answerCount.setCount(count);
+                        //获取选择表子类
+                        List<OptionSublistTable> listSublist = voteMapper.selectSublistByOptionId(optionId);
+                        //选择表子类添加到对象
+                        answerCount.setListSublist(listSublist);
                         //获取登陆人是否投票数量
                         log.info("-----optionId=" + optionId + " ; loginNum=" + loginNum);
-                        Integer isVote = voteMapper.isVote(optionId, loginNum);
-                        answerCount.setIsVote(isVote);
-                        list.add(answerCount);
+                        if (null == loginNum || "".equals(loginNum)) {
+                            answerCount.setIsVote(-1);
+                        } else {
+                            Integer isVote = voteMapper.isVote(optionId, loginNum);
+                            answerCount.setIsVote(isVote);
+                        }
+                        //添加到选择表
+                        listOption.add(answerCount);
+                        //子表信息添加
+
+
                     }
 
                 }
 //                PageInfo<AnswerCount>  page = new PageInfo(list);
 //                PageHelper.startPage( pageNum, pageSize );
                 //分页
-                PageUtils<AnswerCount> pageUtils = new PageUtils<>(pageNum, pageSize, list);
+                PageUtils<AnswerCount> pageUtils = new PageUtils<>(pageNum, pageSize, listOption);
 
                 //list 封装到 对象
-                voteCount.setList(pageUtils.getList());
+                voteCount.setListOption(pageUtils.getList());
                 object.put("total", pageUtils.getTotal());
                 object.put("pages", pageUtils.getPages());
 
@@ -427,9 +473,11 @@ public class VoteServiceImpl implements VoteService {
                 //添加视频路径到视图
                 answerCount.setPictureUrl(pictureUrl);
                 //获取视频路径
-                String viewUrl = optionList.get(j).getViewUrl();
+                //   String viewUrl = optionList.get(j).getViewUrl();
                 //视频添加到视图
-                answerCount.setViewUrl(viewUrl);
+                //  answerCount.setViewUrl(viewUrl);
+                String department = optionList.get(j).getDepartment();
+                answerCount.setDepartment(department);
                 //选择表备注
                 String remarks = optionList.get(j).getRemarks();
                 answerCount.setRemarks(remarks);
@@ -463,7 +511,7 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public Integer getCount(String userNum, String voteId) {
+    public boolean getCount(String userNum, String voteId) {
         Integer sum = 0;
         try {
             List<Integer> opIdList = voteMapper.selectOpIdByVoteIdAnduserNum(voteId);
@@ -471,23 +519,49 @@ public class VoteServiceImpl implements VoteService {
                 for (int i = 0; i < opIdList.size(); i++) {
                     if (null != opIdList.get(i)) {
                         Integer count = voteMapper.getAnswerCount(userNum, opIdList.get(i));
-                   //     log.info("----第" + i + "次加入到总条数-----");
+                        //     log.info("----第" + i + "次加入到总条数-----");
                         sum += count;
                     } else {
                         log.error("<<<<<<数据异常");
-                        return null;
+                        return false;
                     }
                 }
             } else {
                 //没有查询到 选择表
-                  log.info("-----没有查到选择表,sum="+sum);
-                return sum;
+                log.info("-----没有查到选择表,sum=" + sum);
+                return false;
             }
         } catch (Exception e) {
             log.error("<<<<<<<验证用户投票接口异常", e);
         }
-        log.info("--------当天用户投票总条数：sum="+sum);
-        return sum;
+
+        log.info("--------当天用户投票总条数：sum=" + sum);
+        if (sum < defaultVale) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<OptionSublistTable> selectSublistByOptionId(Integer optionId) {
+        return voteMapper.selectSublistByOptionId(optionId);
+    }
+
+    @Override
+    public Integer insertOptionSublistTable(OptionSublistTable optionSublistTable) {
+        voteMapper.insertOptionSublistTable(optionSublistTable);
+        Integer subId = optionSublistTable.getId();
+        return subId;
+    }
+
+    @Override
+    public Integer updateOptionSublist(Integer id, String pictureUrl, String viewUrl, String sublistTitle, String remarks) {
+        return voteMapper.updateOptionSublist(id, pictureUrl, viewUrl, sublistTitle, remarks);
+    }
+
+    @Override
+    public Integer deleteSublistSate(Integer id) {
+        return voteMapper.deleteSublistSate(id);
     }
 
 

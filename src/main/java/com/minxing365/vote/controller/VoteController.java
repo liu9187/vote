@@ -3,10 +3,12 @@ package com.minxing365.vote.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.minxing365.vote.bean.AnswerTable;
+import com.minxing365.vote.bean.OptionSublistTable;
 import com.minxing365.vote.bean.OptionTable;
 import com.minxing365.vote.bean.VoteMainTable;
 import com.minxing365.vote.pojo.VoteAndOption;
 import com.minxing365.vote.pojo.VoteCount;
+import com.minxing365.vote.service.TimerService;
 import com.minxing365.vote.service.VoteService;
 import com.minxing365.vote.util.JnbEsbUtil;
 import com.minxing365.vote.util.PageUtils;
@@ -33,58 +35,62 @@ import java.util.UUID;
 @RequestMapping("/api/v2/vote")
 @Api("投票项目api文档")
 public class VoteController {
-    Logger log = LoggerFactory.getLogger(VoteController.class);
+    private Logger log = LoggerFactory.getLogger(VoteController.class);
 
     @Autowired
     private VoteService voteService;
     @Value("${img.location}")
     private String location;
+    @Value("${name}")
+    private String name;
 
     /**
      * 保存主表
      *
-     * @param voteTitle 主表主题
-     * @param createUserNum 创建人行员号
+     * @param voteTitle      主表主题
+     * @param createUserNum  创建人行员号
      * @param createUserName 创建人姓名
-     * @param endTime 结束时间
-     * @param describes 投票描述
-     * @param  remarks 备注
-     * @param  id 主表
+     * @param endTime        结束时间
+     * @param describes      投票描述
+     * @param remarks        备注
+     * @param id             主表
      * @return jsonObject.toJSONString()
      */
     @ApiOperation("保存主表")
     @ApiImplicitParams({
-            @ApiImplicitParam(paramType = "query",name ="id",dataType = "String",required = true,value = "主表id"),
-            @ApiImplicitParam(paramType = "query",name = "voteTitle",dataType = "String",required = true,value = "主表主题"),
-            @ApiImplicitParam(paramType = "query",name = "createUserNum",dataType = "String",required = true,value = "创建人行员号"),
-            @ApiImplicitParam(paramType = "query",name = "createUserName",dataType = "String",required = true,value = "创建人姓名"),
-            @ApiImplicitParam(paramType = "query",name = "describes",dataType = "String",required = true,value = "投票描述"),
-            @ApiImplicitParam(paramType = "query",name = "remarks",dataType = "String",required = true,value = "备注"),
-            @ApiImplicitParam(paramType = "query",name = "endTime",dataType = "Long",required = true,value = "结束时间")
+            @ApiImplicitParam(paramType = "query", name = "id", dataType = "String", required = true, value = "主表id"),
+            @ApiImplicitParam(paramType = "query", name = "voteTitle", dataType = "String", required = true, value = "主表主题"),
+            @ApiImplicitParam(paramType = "query", name = "createUserNum", dataType = "String", required = true, value = "创建人行员号"),
+            @ApiImplicitParam(paramType = "query", name = "createUserName", dataType = "String", required = true, value = "创建人姓名"),
+            @ApiImplicitParam(paramType = "query", name = "describes", dataType = "String", required = true, value = "投票描述"),
+            @ApiImplicitParam(paramType = "query", name = "remarks", dataType = "String", required = true, value = "备注"),
+            @ApiImplicitParam(paramType = "query", name = "startTime", dataType = "Long", required = true, value = "开始时间"),
+            @ApiImplicitParam(paramType = "query", name = "endTime", dataType = "Long", required = true, value = "结束时间")
     })
     @ApiResponses({
-            @ApiResponse(code = 400,message = "请求方法不正确"),
-            @ApiResponse(code = 404,message = "请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求方法不正确"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/insertVoteMainTable", method = {RequestMethod.GET})
     public String insertVoteMainTable(@RequestParam String id,
-                                      @RequestParam String voteTitle,
-                                      @RequestParam String createUserNum,
-                                      @RequestParam String createUserName,
-                                      @RequestParam String describes,
-                                      @RequestParam String remarks,
+                                      @RequestParam(required = false) String voteTitle,
+                                      @RequestParam(required = false) String createUserNum,
+                                      @RequestParam(required = false) String createUserName,
+                                      @RequestParam(required = false) String describes,
+                                      @RequestParam(required = false) String remarks,
+                                      @RequestParam Long startTime,
                                       @RequestParam Long endTime
     ) {
-        log.info("insertVoteMainTable parameter : id=" + id + " ; createUserNum=" + createUserNum + "; createUserName" + createUserName + "; endTime" + endTime + ";describes:" + describes + ";remarks:" + remarks+";voteTitle:"+voteTitle);
+        log.info("insertVoteMainTable parameter : id=" + id + " ; createUserNum=" + createUserNum + "; createUserName" + createUserName + "; endTime" + endTime + ";describes:" + describes + ";remarks:" + remarks + ";voteTitle:" + voteTitle);
         JSONObject jsonObject = new JSONObject();
 
-        if (null == endTime || null == id || null == voteTitle || null == createUserName || null == describes || null == remarks ||
-                "".equals(voteTitle) || "".equals(createUserNum) || "".equals(createUserName) || "".equals(describes) || "".equals(remarks)) {
-            jsonObject.put("message", "参数错误");
-            log.error("<<<<<<<<<parameter error ");
-            return jsonObject.toJSONString();
-
-        }
+//        if (null == endTime || null == id || null == voteTitle || null == createUserName || null == describes || null == remarks ||
+//                "".equals(voteTitle) || "".equals(createUserNum) || "".equals(createUserName) || "".equals(describes) || "".equals(remarks)) {
+//            jsonObject.put("message", "参数错误");
+//            log.error("<<<<<<<<<parameter error ");
+//            return jsonObject.toJSONString();
+//
+//        }
         VoteMainTable voteMainTable = new VoteMainTable();
         voteMainTable.setId(id);
         voteMainTable.setVoteTitle(voteTitle);
@@ -93,14 +99,15 @@ public class VoteController {
         voteMainTable.setEndTime(endTime);
         voteMainTable.setDescribes(describes);
         voteMainTable.setRemarks(remarks);
+        voteMainTable.setStartTime(startTime);
         voteMainTable.setState(1);
         try {
-            Integer result = voteService.insertVoteMainTable(voteMainTable);
-            if (null != result && result > 0) {
-                log.info("-----insertVoteMainTable : result----"+result);
-                jsonObject.put("message", "新增方法成功");
-                jsonObject.put("result", result);
-            }
+            String result = voteService.insertVoteMainTable(voteMainTable);
+            // if (null != result && result > 0) {
+            log.info("-----insertVoteMainTable : result----" + result);
+            jsonObject.put("message", "新增方法成功");
+            jsonObject.put("result", result);
+            //  }
         } catch (Exception e) {
             jsonObject.put("message", "<<<<<<新增方法失败");
             jsonObject.put("result", -1);
@@ -109,6 +116,7 @@ public class VoteController {
         }
         return jsonObject.toJSONString();
     }
+
     /**
      * 保存选项表
      *
@@ -116,10 +124,10 @@ public class VoteController {
      * @return
      */
     @ApiOperation("保存选项表")
-    @ApiImplicitParams(@ApiImplicitParam(paramType = "body",name = "optionTable",dataType = "OptionTable",required = true,value = "选择表"))
+    @ApiImplicitParams(@ApiImplicitParam(paramType = "body", name = "optionTable", dataType = "OptionTable", required = true, value = "选择表"))
     @RequestMapping(value = "/insertOptionTable", method = {RequestMethod.POST})
     public String insertOptionTable(@RequestBody OptionTable optionTable) {
-        log.info("-----" + optionTable.getOptionTitle() + "----" + optionTable.getRemarks() + "-----" + optionTable.getViewUrl() + "----" + optionTable.getVoteId() + "---" + optionTable.getOptionFlag());
+        log.info("-----" + optionTable.getOptionTitle() + "----" + optionTable.getRemarks() + "-----" + "----" + optionTable.getVoteId() + "---" );
         Integer id = voteService.insertOptionTable(optionTable);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", id);
@@ -133,6 +141,26 @@ public class VoteController {
         return jsonObject.toJSONString();
     }
 
+    @ApiOperation("保存选择表子表")
+    @ApiImplicitParams(@ApiImplicitParam(paramType = "body", name = "optionSublistTable", dataType = "OptionSublistTable", required = true, value = "选择表子表"))
+    @RequestMapping(value = "/insertOptionSublistTable", method = {RequestMethod.POST})
+    public String insertOptionSublistTable(@RequestBody OptionSublistTable optionSublistTable) {
+        log.info("------OptionId=" + optionSublistTable.getOptionId() +
+                "PictureUrl=" + optionSublistTable.getPictureUrl() + "Remarks=" + optionSublistTable.getRemarks() +
+                "SublistTitle=" + optionSublistTable.getSublistTitle() + "ViewUrl=" + optionSublistTable.getViewUrl());
+        JSONObject jsonObject = new JSONObject();
+        try {
+            Integer subId = voteService.insertOptionSublistTable(optionSublistTable);
+            jsonObject.put("subId", subId);
+            jsonObject.put("message", "保存选择表子表成功");
+        } catch (Exception e) {
+            jsonObject.put("message", "保存选择表子表失败");
+            log.error("<<<<<<<新增选择表子表异常", e);
+        }
+        return jsonObject.toJSONString();
+
+    }
+
     /**
      * 保存答案表
      *
@@ -140,9 +168,9 @@ public class VoteController {
      * @return
      */
     @ApiOperation("保存答案表")
-    @ApiImplicitParams(@ApiImplicitParam(paramType = "body",name = "answerTable",dataType = "AnswerTable",required = true,value = "答案表信息"))
+    @ApiImplicitParams(@ApiImplicitParam(paramType = "body", name = "answerTable", dataType = "AnswerTable", required = true, value = "答案表信息"))
     @RequestMapping(value = "/insertAnswerTable", method = {RequestMethod.POST})
-    public String insertAnswerTable( AnswerTable answerTable) {
+    public String insertAnswerTable(AnswerTable answerTable) {
         JSONObject jsonObject = new JSONObject();
         Integer id = voteService.insertAnswerTable(answerTable);
         jsonObject.put("id", id);
@@ -158,11 +186,12 @@ public class VoteController {
 
     /**
      * 根据主表id查询 主表和选择表信息
+     *
      * @param id 主表
      * @return
      */
     @ApiOperation("根据主表id查询 主表和选择表信息")
-    @ApiImplicitParams(@ApiImplicitParam(paramType = "query",name = "id",dataType = "String",required = true,value = "主键id"))
+    @ApiImplicitParams(@ApiImplicitParam(paramType = "query", name = "id", dataType = "String", required = true, value = "主键id"))
     @RequestMapping(value = "/selectVoteAndOption", method = {RequestMethod.GET})
     public String selectVoteAndOption(@RequestParam(defaultValue = "") String id) {
         JSONObject jsonObject = new JSONObject();
@@ -181,13 +210,13 @@ public class VoteController {
     /**
      * 查询是否投票
      *
-     * @param id 答案表id
+     * @param id          答案表id
      * @param optionTitle 选择表主题
      * @return
      */
     @ApiOperation("查询是否投票")
-    @ApiImplicitParams({@ApiImplicitParam(paramType = "query",name = "id",dataType = "String",required = true,value = "答案表id"),
-                        @ApiImplicitParam(paramType = "query",name = "optionTitle",dataType = "String",value = "选择表主题")})
+    @ApiImplicitParams({@ApiImplicitParam(paramType = "query", name = "id", dataType = "String", required = true, value = "答案表id"),
+            @ApiImplicitParam(paramType = "query", name = "optionTitle", dataType = "String", value = "投票人行员号")})
     @RequestMapping(value = "/selectAnswer", method = {RequestMethod.GET})
     public String selectAnswer(@RequestParam String id, @RequestParam String optionTitle) {
         JSONObject jsonObject = new JSONObject();
@@ -211,7 +240,7 @@ public class VoteController {
      * @return
      */
     @ApiOperation("根据选择表id查询选择表")
-    @ApiImplicitParams(@ApiImplicitParam(paramType = "query",name = "id",dataType = "Integer",required = true,value = "选择表id"))
+    @ApiImplicitParams(@ApiImplicitParam(paramType = "query", name = "id", dataType = "Integer", required = true, value = "选择表id"))
     @RequestMapping(value = "/selectOptionTableById", method = {RequestMethod.GET})
     public String selectOptionTableById(@RequestParam Integer id) {
         JSONObject jsonObject = new JSONObject();
@@ -241,10 +270,10 @@ public class VoteController {
      * @return
      */
     @ApiOperation("根据主表id查询选项表信息")
-    @ApiImplicitParams(@ApiImplicitParam(paramType = "query",name = "voteId",dataType = "String",required = true,value = "主表id"))
+    @ApiImplicitParams(@ApiImplicitParam(paramType = "query", name = "voteId", dataType = "String", required = true, value = "主表id"))
     @RequestMapping(value = "/selectOptionTableByvoteId", method = {RequestMethod.GET})
     public String selectOptionTableByvoteId(@RequestParam String voteId) {
-          log.info("------selectOptionTableByvoteId-- voteId="+voteId);
+        log.info("------selectOptionTableByvoteId-- voteId=" + voteId);
         JSONObject jsonObject = new JSONObject();
         if ("".equals(voteId)) {
             log.error("<<<<<<parameter error");
@@ -289,16 +318,23 @@ public class VoteController {
      * 根据主键id修改主表
      *
      * @param voteTitle 主题
-     * @param endTime 结束时间
+     * @param endTime   结束时间
      * @param id
      * @return
      */
     @ApiOperation("根据主键id修改主表")
-    @ApiImplicitParams({@ApiImplicitParam(paramType = "query",name = "voteTitle",dataType = "String",value = "主题"),
-                       @ApiImplicitParam(paramType = "query",name = "endTime",dataType = "Long",value = "结束时间"),
-                       @ApiImplicitParam(paramType = "query",name = "id",dataType = "String",value = "主表id",required = true)})
+    @ApiImplicitParams({@ApiImplicitParam(paramType = "query", name = "voteTitle", dataType = "String", value = "主题"),
+            @ApiImplicitParam(paramType = "query", name = "describes", dataType = "String", value = "投票描述"),
+            @ApiImplicitParam(paramType = "query", name = "remarks", dataType = "String", value = "备注"),
+            @ApiImplicitParam(paramType = "query", name = "startTime", dataType = "Long", value = "开始时间"),
+            @ApiImplicitParam(paramType = "query", name = "endTime", dataType = "Long", value = "结束时间"),
+            @ApiImplicitParam(paramType = "query", name = "id", dataType = "String", value = "主表id", required = true)})
     @RequestMapping(value = "/updateVoteMainTable", method = {RequestMethod.PUT})
-    public String updateVoteMainTable(@RequestParam(defaultValue = "", required = false) String voteTitle, @RequestParam(required = false) Long endTime, @RequestParam String id) {
+    public String updateVoteMainTable(@RequestParam(defaultValue = "", required = false) String voteTitle,
+                                      @RequestParam(defaultValue = "", required = false) String describes,
+                                      @RequestParam(required = false) String remarks,
+                                      @RequestParam(required = false) Long startTime,
+                                      @RequestParam(required = false) Long endTime, @RequestParam String id) {
         JSONObject jsonObject = new JSONObject();
         if (!JnbEsbUtil.isInteger(id)) {
             jsonObject.put("message", "<<<<<<parameter error");
@@ -306,7 +342,7 @@ public class VoteController {
         }
         Integer result = 0;
         try {
-            result = voteService.updateVoteMainTable(voteTitle, endTime, id);
+            result = voteService.updateVoteMainTable(voteTitle, describes, remarks, startTime, endTime, id);
             if (result > 0) {
                 log.error("------updateVoteMainTable Updated data.");
                 jsonObject.put("message", "有数据更新");
@@ -324,45 +360,27 @@ public class VoteController {
     }
 
     /**
-     * 根据选择表主键id修改
+     * 根据选择表id修改
      *
      * @param optionTitle 选择表主题
-     * @param pictureUrl 图片路径
-     * @param viewUrl 视频路径
-     * @param optionFlag 文件标识
-     * @param remarks 备注
-     * @param id  选择表id
+     * @param pictureUrl  图片路径
+     * @param remarks     备注
+     * @param id          选择表id
      * @return
      */
-    @ApiOperation("根据选择表主键id修改")
-    @ApiImplicitParams({@ApiImplicitParam(paramType = "query",name = "optionTitle",dataType = "String",value = "选择表主题",required = true),
-                         @ApiImplicitParam(paramType = "query",name = "pictureUrl",dataType = "String",value = "图片路径"),
-                        @ApiImplicitParam(paramType = "query",name = "viewUrl",value = "视频路径",dataType = "String"),
-                        @ApiImplicitParam(paramType = "query",name = "optionFlag",value = "文件标识",dataType = "String"),
-                        @ApiImplicitParam(paramType = "query",name = "remarks",value = "备注",dataType = "String"),
-                        @ApiImplicitParam(paramType = "query",name = "id",value = "选择表id",dataType = "Integer",required = true)})
+    @ApiOperation("根据选择表id修改")
+    @ApiImplicitParams({@ApiImplicitParam(paramType = "query", name = "optionTitle", dataType = "String", value = "选择表主题"),
+            @ApiImplicitParam(paramType = "query", name = "pictureUrl", dataType = "String", value = "图片路径"),
+            @ApiImplicitParam(paramType = "query", name = "remarks", value = "备注", dataType = "String"),
+            @ApiImplicitParam(paramType = "query", name = "department", value = "部门", dataType = "String"),
+            @ApiImplicitParam(paramType = "query", name = "id", value = "选择表id", dataType = "Integer", required = true)})
     @RequestMapping(value = "/updateOptionTable", method = {RequestMethod.PUT})
-    public String updateOptionTable(@RequestParam String optionTitle, @RequestParam(required = false) String pictureUrl, @RequestParam(required = false) String viewUrl, @RequestParam Integer optionFlag, @RequestParam(required = false) String remarks, @RequestParam Integer id) {
+    public String updateOptionTable(@RequestParam(required = false) String optionTitle, @RequestParam(required = false) String pictureUrl, @RequestParam(required = false) String remarks,@RequestParam(required = false) String department, @RequestParam Integer id) {
+        log.info("---optionTitle="+optionTitle+"------pictureUrl="+pictureUrl+"---remarks="+remarks+"---department="+department+"id="+id);
         JSONObject jsonObject = new JSONObject();
-        if (null == id) {
-            jsonObject.put("message", "<<<<<<id parameter null");
-            return jsonObject.toJSONString();
-        }
-        if ("".equals(optionTitle)) {
-            optionTitle = null;
-        }
-        if ("".equals(pictureUrl)) {
-            pictureUrl = null;
-        }
-        if ("".equals(viewUrl)) {
-            viewUrl = null;
-        }
-        if ("".equals(remarks)) {
-            remarks = null;
-        }
         Integer result = 0;
         try {
-            result = voteService.updateOptionTable(optionTitle, pictureUrl, viewUrl, optionFlag, remarks, id);
+            result = voteService.updateOptionTable(optionTitle, pictureUrl, remarks,department, id);
             if (result > 0) {
                 log.error("------Updated data.");
                 jsonObject.put("message", "有数据更新");
@@ -385,13 +403,14 @@ public class VoteController {
      * @return
      */
     @ApiOperation("发布消息")
-    @ApiImplicitParam(name = "id",paramType = "query",dataType = "String",value = "主表id")
+    @ApiImplicitParam(name = "id", paramType = "query", dataType = "String", value = "主表id")
     @RequestMapping(value = "/publishVote", method = {RequestMethod.PUT})
     public String publishVote(@RequestParam String id) {
         JSONObject jsonObject = new JSONObject();
         Integer result = 0;
         try {
             result = voteService.updateState(id);
+            log.info("-----result=" + result);
             if (result > 0) {
                 log.error("------publishVote Updated data.");
                 jsonObject.put("message", "有数据更新");
@@ -414,7 +433,7 @@ public class VoteController {
      * @return
      */
     @ApiOperation("删除投票")
-    @ApiImplicitParam(name = "id",paramType = "query",dataType = "String",value = "主表id",required = true)
+    @ApiImplicitParam(name = "id", paramType = "query", dataType = "String", value = "主表id", required = true)
     @RequestMapping(value = "/deleteVote", method = {RequestMethod.DELETE})
     public String deleteVote(@RequestParam String id) {
         JSONObject object = new JSONObject();
@@ -440,7 +459,7 @@ public class VoteController {
      * @return
      */
     @ApiOperation("根据选择表id删除选择表")
-    @ApiImplicitParam(name = "id",paramType = "String",dataType = "Integer",value = "子表id")
+    @ApiImplicitParam(name = "id", paramType = "query", dataType = "Integer", value = "子表id")
     @RequestMapping(value = "/deleteOptionTableById", method = {RequestMethod.DELETE})
     public String deleteOptionTableById(@RequestParam Integer id) {
         JSONObject object = new JSONObject();
@@ -474,7 +493,7 @@ public class VoteController {
      * @return
      */
     @ApiOperation("根据主表id查询主表信息")
-    @ApiImplicitParam(name = "id",paramType = "query",dataType = "String",value = "主键id")
+    @ApiImplicitParam(name = "id", paramType = "query", dataType = "String", value = "主键id")
     @RequestMapping(value = "/selectVoteMainTableById", method = {RequestMethod.GET})
     public String selectVoteMainTableById(@RequestParam String id) {
         JSONObject object = new JSONObject();
@@ -502,16 +521,33 @@ public class VoteController {
         return object.toJSONString();
     }
 
+    @ApiOperation("根据选择表id查询选择表子表")
+    @ApiImplicitParam(name = "optionId", paramType = "query", dataType = "String", value = "选择表id")
+    @RequestMapping(value = "/selectSublistByOptionId", method = {RequestMethod.GET})
+    public String selectSublistByOptionId(Integer optionId) {
+        JSONObject jsonObject = new JSONObject();
+        log.info("----根据选择表id查询选择表子表参数：optionId=" + optionId);
+        try {
+            List<OptionSublistTable> sublist = voteService.selectSublistByOptionId(optionId);
+
+            jsonObject.put("sublist", sublist);
+            jsonObject.put("message", "查询选择表子表成功");
+        } catch (Exception e) {
+            log.error("<<<<<<查询选择表子表异常", e);
+        }
+        return jsonObject.toJSONString();
+    }
+
     /**
      * 首页显示
      *
-     * @param pageNum 起始页
+     * @param pageNum  起始页
      * @param pageSize 每页显示的条数
      * @return
      */
     @ApiOperation("首页显示")
-    @ApiImplicitParams({@ApiImplicitParam(name = "pageNum",paramType ="query",dataType = "Integer",defaultValue = "1",value = "起始页"),
-                        @ApiImplicitParam(name = "pageSize",paramType = "query",dataType = "Integer",defaultValue = "10",value = "每页显示的条数")})
+    @ApiImplicitParams({@ApiImplicitParam(name = "pageNum", paramType = "query", dataType = "Integer", defaultValue = "1", value = "起始页"),
+            @ApiImplicitParam(name = "pageSize", paramType = "query", dataType = "Integer", defaultValue = "10", value = "每页显示的条数")})
     @RequestMapping(value = "/selectVoteMainTable", method = {RequestMethod.GET})
     public String selectVoteMainTable(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize) {
         JSONObject jsonObject = new JSONObject();
@@ -531,18 +567,19 @@ public class VoteController {
     }
 
     /**
-     * 发布列表
-     * @param pageNum 起始页
+     * 发布列表 app引导页
+     *
+     * @param pageNum  起始页
      * @param pageSize 每页显示的条数
      * @return
      */
-    @ApiOperation("发布列表")
-    @ApiImplicitParams({@ApiImplicitParam(name = "pageNum",paramType ="query",dataType = "Integer",defaultValue = "1",value = "起始页"),
-                       @ApiImplicitParam(name = "pageSize",paramType = "query",dataType = "Integer",defaultValue = "10",value = "每页显示的条数")})
+    @ApiOperation("发布列表:app引导页")
+    @ApiImplicitParams({@ApiImplicitParam(name = "pageNum", paramType = "query", dataType = "Integer", defaultValue = "1", value = "起始页"),
+            @ApiImplicitParam(name = "pageSize", paramType = "query", dataType = "Integer", defaultValue = "10", value = "每页显示的条数")})
     @RequestMapping(value = "/selectVoteMainTableByState", method = {RequestMethod.GET})
-    public  String selectVoteMainTableByState(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize){
+    public String selectVoteMainTableByState(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         JSONObject jsonObject = new JSONObject();
-             log.info("-------selectVoteMainTableByState parameter : pageNum="+pageNum+"; pageSize="+pageSize);
+        log.info("-------selectVoteMainTableByState parameter : pageNum=" + pageNum + "; pageSize=" + pageSize);
         try {
             List<VoteMainTable> list = voteService.selectVoteMainTableByState(pageNum, pageSize);
             PageInfo<VoteMainTable> page = new PageInfo(list);
@@ -565,18 +602,18 @@ public class VoteController {
      * @param voteTitle     主题
      * @param pageNum       起始页
      * @param pageSize      每页显示条数
-     * @param pageNum1       起始页 子表
-     * @param pageSize1      每页显示条数 子表
+     * @param pageNum1      起始页 子表
+     * @param pageSize1     每页显示条数 子表
      * @return
      */
     @ApiOperation("投票信息查询")
-    @ApiImplicitParams({@ApiImplicitParam(name = "state",paramType = "query",dataType = "Integer",required = true,value = "发布状态"),
-                       @ApiImplicitParam(name = "createUserNum",paramType = "query",dataType = "String",required = true,value = "行员号"),
-                       @ApiImplicitParam(name = "voteTitle",paramType = "query",dataType = "String",required = true,value = "主题"),
-                       @ApiImplicitParam(name = "pageNum",paramType = "query",dataType = "String",value = "起始页"),
-                       @ApiImplicitParam(name = "pageSize",paramType = "query",dataType = "String",value = "每页显示条数"),
-                       @ApiImplicitParam(name = "pageNum1",paramType = "query",dataType = "String",value = "起始页"),
-                       @ApiImplicitParam(name = "pageSize1",paramType = "query",dataType = "String",value = "每页显示条数")})
+    @ApiImplicitParams({@ApiImplicitParam(name = "state", paramType = "query", dataType = "Integer", required = true, value = "发布状态"),
+            @ApiImplicitParam(name = "createUserNum", paramType = "query", dataType = "String", required = true, value = "行员号"),
+            @ApiImplicitParam(name = "voteTitle", paramType = "query", dataType = "String", required = true, value = "主题"),
+            @ApiImplicitParam(name = "pageNum", paramType = "query", dataType = "String", value = "起始页"),
+            @ApiImplicitParam(name = "pageSize", paramType = "query", dataType = "String", value = "每页显示条数"),
+            @ApiImplicitParam(name = "pageNum1", paramType = "query", dataType = "String", value = "起始页"),
+            @ApiImplicitParam(name = "pageSize1", paramType = "query", dataType = "String", value = "每页显示条数")})
     @RequestMapping(value = "/select", method = {RequestMethod.GET})
     public String select(@RequestParam Integer state,
                          @RequestParam String createUserNum,
@@ -587,9 +624,9 @@ public class VoteController {
                          @RequestParam(defaultValue = "10") Integer pageSize1) {
         JSONObject jsonObject = new JSONObject();
         try {
-            List<VoteCount> list = voteService.select(state, createUserNum, voteTitle, pageNum, pageSize,pageNum1,pageSize1);
+            List<VoteCount> list = voteService.select(state, createUserNum, voteTitle, pageNum, pageSize, pageNum1, pageSize1);
             //分页
-            PageUtils<VoteCount> pageUtils=new PageUtils<>(pageNum,pageSize,list);
+            PageUtils<VoteCount> pageUtils = new PageUtils<>(pageNum, pageSize, list);
             jsonObject.put("list", pageUtils.getList());
             //总页数
             jsonObject.put("pages", pageUtils.getPages());
@@ -606,27 +643,28 @@ public class VoteController {
 
     /**
      * app页面显示
-     * @param pageNum 起始页
-     * @param  pageSize  每页显示条数
-     * @param id 主表id
+     *
+     * @param pageNum  起始页
+     * @param pageSize 每页显示条数
+     * @param id       主表id
      * @return
      */
     @ApiOperation("app页面显示")
     @ApiImplicitParams({
-                          @ApiImplicitParam(name = "id",paramType = "query",dataType = "String",value = "主表id"),
-                          @ApiImplicitParam(name = "pageNum",paramType = "query",dataType = "String",value = "起始页"),
-                          @ApiImplicitParam(name = "pageSize",paramType = "query",dataType = "String",value = "每页显示条数"),
-                          @ApiImplicitParam(name = "loginNum",paramType = "query",dataType = "String",value = "登陆人行员号")})
+            @ApiImplicitParam(name = "id", paramType = "query", dataType = "String", value = "主表id"),
+            @ApiImplicitParam(name = "pageNum", paramType = "query", dataType = "String", defaultValue = "1",value = "起始页"),
+            @ApiImplicitParam(name = "pageSize", paramType = "query", dataType = "String",defaultValue = "10",value = "每页显示条数"),
+            @ApiImplicitParam(name = "loginNum", paramType = "query", dataType = "String", value = "登陆人行员号")})
     @RequestMapping(value = "/selectOne", method = {RequestMethod.GET})
     public String selectOne(@RequestParam String id,
-                            @RequestParam(defaultValue = "1") Integer pageNum,
-                            @RequestParam(defaultValue = "10") Integer pageSize,
-                            @RequestParam String loginNum) {
-        String result=new String();
-           log.info("----selectOne parameter are id="+id+"; pageNum="+pageNum+";pageSize="+pageSize);
+                            @RequestParam(defaultValue = "1", required = false) Integer pageNum,
+                            @RequestParam(defaultValue = "10", required = false) Integer pageSize,
+                            @RequestParam(required = false) String loginNum) {
+        String result = new String();
+        log.info("----selectOne parameter are id=" + id + "; pageNum=" + pageNum + ";pageSize=" + pageSize);
         try {
-             result = voteService.selectOne(id,pageNum,pageSize,loginNum);
-            log.info("------selectOne 返回结果 result："+result+" ; message:查询成功");
+            result = voteService.selectOne(id, pageNum, pageSize, loginNum);
+            log.info("------selectOne 返回结果 result：" + result + " ; message:查询成功");
         } catch (Exception e) {
             log.info("-------selectOne invocation failed", e);
         }
@@ -635,60 +673,131 @@ public class VoteController {
 
     /**
      * app 搜索
+     *
      * @param optionTitle 选择表主题
-     * @param pageNum 起始页
-     * @param pageSize 每页条数
+     * @param pageNum     起始页
+     * @param pageSize    每页条数
      * @return
      */
     @ApiOperation("app搜索")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "voteId",paramType = "query",dataType = "String",value = "主表id",required = true),
-            @ApiImplicitParam(name = "optionTitle",paramType = "query",dataType = "String",value = "选择表主题",required = true),
-            @ApiImplicitParam(name = "pageNum",paramType = "query",dataType = "String",value = "起始页"),
-            @ApiImplicitParam(name = "pageSize",paramType = "query",dataType = "String",value = "每页显示条数")})
-       @RequestMapping(value = "/selectOptionTableByTitle", method = {RequestMethod.GET})
-      public String selectOptionTableByTitle(@RequestParam(defaultValue = "") String optionTitle,
-                                             @RequestParam(defaultValue = "1") Integer pageNum,
-                                             @RequestParam(defaultValue = "6") Integer pageSize,
-                                              @RequestParam(defaultValue = "") String voteId){
-              log.info("--selectOptionTableByTitle---optionTitle="+optionTitle+";pageNum="+pageNum+" ;pageSize="+pageSize+";voteId="+voteId);
-             String result=null;
-           try {
-             result=  voteService.selectOptionTableByTitle(optionTitle,pageNum,pageSize,voteId);
-           }catch (Exception e){
-                 log.error("<<<<调用app查询错误",e);
-           }
+            @ApiImplicitParam(name = "voteId", paramType = "query", dataType = "String", value = "主表id", required = true),
+            @ApiImplicitParam(name = "optionTitle", paramType = "query", dataType = "String", value = "选择表主题", required = true),
+            @ApiImplicitParam(name = "pageNum", paramType = "query", dataType = "String", value = "起始页"),
+            @ApiImplicitParam(name = "pageSize", paramType = "query", dataType = "String", value = "每页显示条数")})
+    @RequestMapping(value = "/selectOptionTableByTitle", method = {RequestMethod.GET})
+    public String selectOptionTableByTitle(@RequestParam(defaultValue = "") String optionTitle,
+                                           @RequestParam(defaultValue = "1") Integer pageNum,
+                                           @RequestParam(defaultValue = "6") Integer pageSize,
+                                           @RequestParam(defaultValue = "") String voteId) {
+        log.info("--selectOptionTableByTitle---optionTitle=" + optionTitle + ";pageNum=" + pageNum + " ;pageSize=" + pageSize + ";voteId=" + voteId);
+        String result = null;
+        try {
+            result = voteService.selectOptionTableByTitle(optionTitle, pageNum, pageSize, voteId);
+        } catch (Exception e) {
+            log.error("<<<<调用app查询错误", e);
+        }
 
         return result;
-      }
+    }
 
     /**
-     *  投票数验证
+     * 投票数验证
+     *
      * @param userNum 答案表行员号
      * @param voteId  主表id
      * @return
      */
     @ApiOperation("投票数验证")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userNum",paramType = "query",dataType = "String",value = "答案表行员号" ,required = true),
-            @ApiImplicitParam(name = "voteId",paramType = "query",dataType = "String",value = "主表id",required = true)
-            })
-      @RequestMapping(value = "/getCount", method = {RequestMethod.GET})
-      public String getCount(@RequestParam(defaultValue = "") String userNum, @RequestParam(defaultValue = "") String voteId){
-              log.info("getCount parameter:userNum="+userNum+"; voteId="+voteId);
-                JSONObject object=new JSONObject();
-              Integer sum=null;
-              try {
-               sum=   voteService.getCount(userNum,voteId);
-                  object.put("sum",sum);
-                  object.put("message","获取信息成功");
-              }catch (Exception e){
-                  log.error("<<<<<<getCount 失败",e);
+            @ApiImplicitParam(name = "userNum", paramType = "query", dataType = "String", value = "答案表行员号", required = true),
+            @ApiImplicitParam(name = "voteId", paramType = "query", dataType = "String", value = "主表id", required = true)
+    })
+    @RequestMapping(value = "/getCount", method = {RequestMethod.GET})
+    public String getCount(@RequestParam(defaultValue = "") String userNum, @RequestParam(defaultValue = "") String voteId) {
+        log.info("getCount parameter:userNum=" + userNum + "; voteId=" + voteId);
+        JSONObject object = new JSONObject();
+        boolean sum;
+        try {
+            sum = voteService.getCount(userNum, voteId);
+            object.put("sum", sum);
+            object.put("message", "获取信息成功");
+        } catch (Exception e) {
+            log.error("<<<<<<getCount 失败", e);
 
-              }
+        }
 
-           return object.toJSONString();
-      }
+        return object.toJSONString();
+    }
+
+    /**
+     * 根据选择表子表id更新子表
+     *
+     * @param id
+     * @param pictureUrl
+     * @param viewUrl
+     * @param sublistTitle
+     * @param remarks
+     * @return
+     */
+    @ApiOperation("根据选择表子表id更新子表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", paramType = "query", dataType = "Integer", value = "子表id", required = true),
+            @ApiImplicitParam(name = "pictureUrl", paramType = "query", dataType = "String", value = "图片路径"),
+            @ApiImplicitParam(name = "viewUrl", paramType = "query", dataType = "String", value = "视频路径"),
+            @ApiImplicitParam(name = "sublistTitle", paramType = "query", dataType = "String", value = "说明"),
+            @ApiImplicitParam(name = "remarks", paramType = "query", dataType = "String", value = "备注"),
+    })
+    @RequestMapping(value = "/updateOptionSublist", method = {RequestMethod.PUT})
+    public String updateOptionSublist(@RequestParam(name = "id") Integer id,
+                                      @RequestParam(name = "pictureUrl", required = false) String pictureUrl,
+                                      @RequestParam(name = "viewUrl", required = false) String viewUrl,
+                                      @RequestParam(name = "sublistTitle", required = false) String sublistTitle,
+                                      @RequestParam(name = "remarks", required = false) String remarks) {
+        JSONObject jn = new JSONObject();
+        try {
+            Integer result = voteService.updateOptionSublist(id, pictureUrl, viewUrl, sublistTitle, remarks);
+            if (result > 0) {
+                jn.put("message", "更新成功");
+            } else {
+                jn.put("message", "更新失败");
+            }
+
+        } catch (Exception e) {
+            log.error("<<<<<<更新异常");
+            jn.put("message", "更新异常");
+        }
+
+        return jn.toJSONString();
+    }
+
+    /**
+     * 删除子表
+     *
+     * @param id
+     * @return
+     */
+    @ApiOperation("删除子表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", paramType = "query", dataType = "Integer", value = "子表id", required = true)
+    })
+    @RequestMapping(value = "/deleteSublistSate", method = {RequestMethod.DELETE})
+    public String deleteSublistSate(@RequestParam Integer id) {
+        JSONObject jn = new JSONObject();
+        try {
+            Integer result = voteService.deleteSublistSate(id);
+            if (result > 0) {
+                jn.put("message", "删除成功");
+            } else {
+                jn.put("message", "已删除");
+            }
+
+        } catch (Exception e) {
+            jn.put("message", "删除异常");
+            log.error("<<<<<<<<删除异常");
+        }
+        return jn.toJSONString();
+    }
 
     /**
      * 上传
@@ -731,5 +840,13 @@ public class VoteController {
             } catch (Exception e) {
             }
         }
+    }
+    @ApiOperation("测试")
+    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    @ResponseBody
+    public String test(){
+         log.info("name="+name);
+         String result=name;
+         return  result;
     }
 }

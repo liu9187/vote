@@ -1,6 +1,7 @@
 package com.minxing365.vote.service;
 
 import com.minxing365.vote.bean.AnswerTable;
+import com.minxing365.vote.bean.OptionSublistTable;
 import com.minxing365.vote.bean.OptionTable;
 import com.minxing365.vote.bean.VoteMainTable;
 import com.minxing365.vote.pojo.AnswerCount;
@@ -18,7 +19,7 @@ public interface VoteService {
      * @param voteMainTable
      * @return
      */
-    Integer insertVoteMainTable(VoteMainTable voteMainTable);
+    String insertVoteMainTable(VoteMainTable voteMainTable);
 
     /**
      * 选项表
@@ -78,24 +79,26 @@ public interface VoteService {
 
     /**
      * 更新主表
-     * @param voteTitle
-     * @param endTime
+     * @param voteTitle 主题
+     * @param describes 描述
+     * @param remarks 备注
+     * @param startTime 开始时间
+     * @param endTime 结束时间
      * @param id
      * @return
      */
-    Integer updateVoteMainTable(@Param("voteTitle") String voteTitle, @Param("endTime") Long endTime, @Param("id") String id);
+    Integer updateVoteMainTable(@Param("voteTitle") String voteTitle,@Param("describes")String describes,
+                                @Param("remarks") String remarks, @Param("startTime") Long startTime,  @Param("endTime") Long endTime, @Param("id") String id);
 
     /**
      * 修改选择表
      * @param optionTitle
      * @param pictureUrl
-     * @param viewUrl
-     * @param optionFlag
      * @param remarks
      * @param id
      * @return
      */
-    Integer updateOptionTable(@Param("optionTitle") String optionTitle, @Param("pictureUrl") String pictureUrl, @Param("viewUrl") String viewUrl, @Param("optionFlag") Integer optionFlag, @Param("remarks") String remarks, @Param("id") Integer id);
+    Integer updateOptionTable(@Param("optionTitle") String optionTitle, @Param("pictureUrl") String pictureUrl, @Param("remarks") String remarks,@Param("department") String department, @Param("id") Integer id);
 
     /**
      * 修改主表状态
@@ -159,5 +162,38 @@ public interface VoteService {
      * @param voteId
      * @return
      */
-    Integer getCount(@Param("userNum") String userNum, @Param("voteId") String voteId);
+    boolean getCount(@Param("userNum") String userNum, @Param("voteId") String voteId);
+
+    /**
+     * 根据选择表id查询选择表子表
+     * @param optionId
+     * @return
+     */
+    List<OptionSublistTable> selectSublistByOptionId(@Param("optionId") Integer optionId);
+
+    /**
+     * 新增选择表子表
+     * @param optionSublistTable
+     * @return
+     */
+    Integer insertOptionSublistTable(OptionSublistTable optionSublistTable);
+
+    /**
+     * 更新选择表子表
+     * @param id
+     * @param pictureUrl
+     * @param viewUrl
+     * @param sublistTitle
+     * @param remarks
+     * @return
+     */
+    Integer updateOptionSublist(@Param("id")  Integer id,@Param("pictureUrl")  String pictureUrl,@Param("viewUrl")  String viewUrl,@Param("sublistTitle")  String sublistTitle,@Param("remarks")  String remarks );
+
+    /**
+     * 删除子表
+     * @param id
+     * @return
+     */
+    Integer deleteSublistSate(@Param("id") Integer id);
+
 }

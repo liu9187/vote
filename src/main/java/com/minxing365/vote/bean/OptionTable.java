@@ -16,11 +16,14 @@ public class OptionTable {
     //图片地址
     private String pictureUrl;
     //视频地址
-    private String viewUrl;
+   // private String viewUrl;
     //选项类型(文本，图片，视频)
-    private Integer optionFlag;
+  //  private Integer optionFlag;
     //备注
     private String remarks;
+    //状态
+    private  Integer stateOption;
+    private  String department;
 
     public Integer getId() {
         return id;
@@ -54,21 +57,21 @@ public class OptionTable {
         this.pictureUrl = pictureUrl;
     }
 
-    public String getViewUrl() {
-        return viewUrl;
-    }
-
-    public void setViewUrl(String viewUrl) {
-        this.viewUrl = viewUrl;
-    }
-
-    public Integer getOptionFlag() {
-        return optionFlag;
-    }
-
-    public void setOptionFlag(Integer optionFlag) {
-        this.optionFlag = optionFlag;
-    }
+//    public String getViewUrl() {
+//        return viewUrl;
+//    }
+//
+//    public void setViewUrl(String viewUrl) {
+//        this.viewUrl = viewUrl;
+//    }
+//
+//    public Integer getOptionFlag() {
+//        return optionFlag;
+//    }
+//
+//    public void setOptionFlag(Integer optionFlag) {
+//        this.optionFlag = optionFlag;
+//    }
 
     public String getRemarks() {
         return remarks;
@@ -76,5 +79,21 @@ public class OptionTable {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public Integer getStateOption() {
+        return stateOption;
+    }
+
+    public void setStateOption(Integer stateOption) {
+        this.stateOption = stateOption;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 }

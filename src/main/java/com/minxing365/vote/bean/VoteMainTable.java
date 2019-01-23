@@ -16,6 +16,9 @@ public class VoteMainTable {
     private String createUserNum;
     //创建人名称
     private String createUserName;
+    //开始时间
+    private  Long startTime;
+    //结束时间
     private Long endTime;
     //状态
     private Integer state;
@@ -54,6 +57,14 @@ public class VoteMainTable {
 
     public void setCreateUserName(String createUserName) {
         this.createUserName = createUserName;
+    }
+
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
     }
 
     public Long getEndTime() {

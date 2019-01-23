@@ -38,10 +38,10 @@ public class PushMessage {
      * @param id 主键id
      * @return
      */
-    public static OcuMessageSendResult sendOcuMessageToUsers(String title, String description,String id) {
+    public static OcuMessageSendResult sendOcuMessageToUsers(String title, String description,String id,Long endTime) {
         OcuMessageSendResult result = null;
           StringBuilder appUrlStr=new StringBuilder( );
-             appUrlStr.append( "launchApp://" ).append( appId ).append( "$$#/index?id=").append( id );
+             appUrlStr.append( "launchApp://" ).append( appId ).append( "$$#/index?id=").append( id ).append("&endTime=").append(endTime);
             String appUrl=appUrlStr.toString();
           log.info( "-----appUrl:" +appUrl);
         try {

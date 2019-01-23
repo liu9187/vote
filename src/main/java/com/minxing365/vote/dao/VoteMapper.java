@@ -1,6 +1,7 @@
 package com.minxing365.vote.dao;
 
 import com.minxing365.vote.bean.AnswerTable;
+import com.minxing365.vote.bean.OptionSublistTable;
 import com.minxing365.vote.bean.OptionTable;
 import com.minxing365.vote.bean.VoteMainTable;
 import com.minxing365.vote.pojo.VoteAndOption;
@@ -20,8 +21,8 @@ public interface VoteMapper {
      * @param voteMainTable
      * @return
      */
-    @Insert("INSERT INTO vote_main_table (id,vote_title,create_user_num,create_user_name,end_time,state,remarks ,describes)"+
-            "VALUES" + "(#{id}, #{voteTitle},#{createUserNum},#{createUserName},#{endTime},#{state},#{remarks},#{describes})")
+    @Insert("INSERT INTO vote_main_table (id,vote_title,create_user_num,create_user_name,end_time,state,remarks ,describes,start_time)" +
+            "VALUES" + "(#{id}, #{voteTitle},#{createUserNum},#{createUserName},#{endTime},#{state},#{remarks},#{describes},#{startTime})")
     Integer insertVoteMainTable(VoteMainTable voteMainTable);
 
     /**
@@ -30,9 +31,19 @@ public interface VoteMapper {
      * @param optionTable
      * @return
      */
-    @Insert("INSERT INTO option_table(vote_id,option_title,picture_url,view_url,option_flag,remarks)VALUES(#{voteId},#{optionTitle},#{pictureUrl},#{viewUrl},#{optionFlag},#{remarks})")
+    @Insert("INSERT INTO option_table(vote_id,option_title,picture_url,remarks,department )VALUES(#{voteId},#{optionTitle},#{pictureUrl},#{remarks},#{department})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer insertOptionTable(OptionTable optionTable);
+
+    /**
+     * 保存选择表子表
+     * @param optionSublistTable
+     * @return
+     */
+    @Insert("INSERT INTO option_sublist_table(option_id,picture_url,view_url,sublist_title,remarks)\n" +
+            "VALUES(#{optionId},#{pictureUrl},#{viewUrl},#{sublistTitle},#{remarks})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    Integer insertOptionSublistTable(OptionSublistTable optionSublistTable);
 
     /**
      * 保存答案表
@@ -44,13 +55,21 @@ public interface VoteMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer insertAnswerTable(AnswerTable answerTable);
 
+
     /**
      * 查询主表和选择表信息
      *
      * @param id
      * @return
      */
-    @Select("SELECT\n" + "  v.id, \n" + "\tv.state,\n" + "\tv.create_time AS createTime,\n" + "\tv.create_user_num AS createUserNum,\n" + "\tv.create_user_name AS createUserName,\n" + "\tv.end_time AS endTime,\n" + "\tv.vote_title AS voteTitle,\n" + "\to.id AS optionId,\n" + "\to.option_flag AS optionFlag ,\n" + "\to.option_title AS optionTitle,\n" + "\to.picture_url AS pictureUrl,\n" + "\to.remarks,\n" + "\to.view_url AS viewUrl,\n" + "\to.vote_id AS voteId\n" + "\n" + "FROM\n" + "\tvote_main_table v\n" + "LEFT JOIN option_table o ON v.id = o.vote_id\n" + "WHERE\n" + "   v.id=#{id}" + "GROUP BY\n" + "\to.id")
+    @Select("SELECT\n" +
+            "\t v.id,\n" +
+            "\t v.state ,v.start_time AS startTime ,v.create_user_num AS createUserNum ,v.create_user_name AS createUserName ,v.end_time AS endTime ,v.vote_title AS voteTitle ,o.id AS optionId , o.option_title AS optionTitle ,o.picture_url AS pictureUrl ,o.remarks ,o.vote_id AS voteId , o.department " +
+            "FROM\n" +
+            "vote_main_table v \n" +
+            "LEFT JOIN option_table o ON v.id = o.vote_id \n" +
+            "WHERE\n" +
+            " o.state_option=1 AND v.id =#{id} GROUP BY o.id")
     List<VoteAndOption> selectVoteAndOption(String id);
 
     /**
@@ -69,31 +88,39 @@ public interface VoteMapper {
      * @param id
      * @return
      */
-    @Select("SELECT  id,vote_id AS voteId,option_title AS optionTitle,picture_url AS pictureUrl,view_url,option_flag AS viewUrl,remarks  FROM  option_table WHERE id=#{id}")
+    @Select("SELECT  id,vote_id AS voteId,option_title AS optionTitle,picture_url AS pictureUrl,remarks,department  FROM  option_table WHERE state_option=1 AND id=#{id}")
     OptionTable selectOptionTableById(@Param(value = "id") Integer id);
 
+    /**
+     * 根据选择表id查询选择表子表
+     * @param optionId
+     * @return
+     */
+    @Select("SELECT id,option_id AS optionId,picture_url AS pictureUrl, sublist_title AS sublistTitle,view_url AS viewUrl,state_sublist AS stateSublist ,remarks   FROM option_sublist_table WHERE  state_sublist=1 AND   option_id=#{optionId}")
+    List<OptionSublistTable> selectSublistByOptionId(@Param("optionId") Integer optionId);
     /**
      * 根据主表id 查询主表
      *
      * @param id
      * @return
      */
-    @Select("SELECT id,vote_title AS voteTitle,create_user_name AS createUserName,create_user_num AS createUserNum,end_time AS endTime,state ,describes,remarks  FROM vote_main_table  WHERE  id=#{id}")
+    @Select("SELECT id,vote_title AS voteTitle,create_user_name AS createUserName,create_user_num AS createUserNum,end_time AS endTime,state ,describes,remarks ,start_time AS startTime FROM vote_main_table  WHERE  id=#{id}")
     VoteMainTable selectVoteMainTableById(@Param("id") String id);
 
     /**
      * 根据发布状态查询主表
+     *
      * @return
      */
-    @Select("SELECT id,vote_title AS voteTitle,create_user_name AS createUserName,create_user_num AS createUserNum,end_time AS endTime,state ,describes,remarks FROM vote_main_table  WHERE state=2")
-    List<VoteMainTable>  selectVoteMainTableByState();
+    @Select("SELECT id,vote_title AS voteTitle,create_user_name AS createUserName,create_user_num AS createUserNum,end_time AS endTime,state ,describes,remarks,start_time AS startTime FROM vote_main_table  WHERE state=2")
+    List<VoteMainTable> selectVoteMainTableByState();
 
     /**
      * 首页查询列表
      *
      * @return
      */
-    @Select("SELECT id,vote_title AS voteTitle,create_user_name AS createUserName,create_user_num AS createUserNum,end_time AS endTime,state  FROM vote_main_table  ")
+    @Select("SELECT id,vote_title AS voteTitle,create_user_name AS createUserName,create_user_num AS createUserNum,end_time AS endTime,start_time AS startTime, state  FROM vote_main_table WHERE state <>3")
     List<VoteMainTable> selectVoteMainTable();
 
     /**
@@ -102,16 +129,18 @@ public interface VoteMapper {
      * @param voteId
      * @return
      */
-    @Select("SELECT  id,vote_id AS voteId,option_title AS optionTitle,picture_url AS pictureUrl,view_url AS viewUrl,option_flag AS optionFlag ,remarks  FROM  option_table WHERE vote_id=#{voteId}")
+    @Select("SELECT  id,vote_id AS voteId,option_title AS optionTitle,picture_url AS pictureUrl,state_option AS stateOption,remarks,department  FROM  option_table WHERE state_option=1 AND vote_id=#{voteId}")
     List<OptionTable> selectOptionTableByvoteId(@Param("voteId") String voteId);
 
     /**
      * 根据选择表标题进行进行查询
+     *
      * @param optionTitle
      * @return
      */
     @Select("SELECT  id,vote_id AS voteId,option_title AS optionTitle,picture_url AS pictureUrl,view_url AS viewUrl,option_flag AS optionFlag ,remarks  FROM  option_table WHERE  vote_id=#{voteId} AND  option_title LIKE #{optionTitle}")
-    List<OptionTable> selectOptionTableByTitle(@Param("optionTitle") String optionTitle,@Param("voteId") String voteId);
+    List<OptionTable> selectOptionTableByTitle(@Param("optionTitle") String optionTitle, @Param("voteId") String voteId);
+
     /**
      * 更新主表
      *
@@ -120,40 +149,54 @@ public interface VoteMapper {
      * @param id
      * @return
      */
-    @UpdateProvider(type = IntegralSqlBuilder.class, method = "updateVoteMainTable")
-    Integer updateVoteMainTable(@Param("voteTitle") String voteTitle, @Param("endTime") Long endTime, @Param("id") String id);
+    @UpdateProvider(type = VoteSqlBuilder.class, method = "updateVoteMainTable")
+    Integer updateVoteMainTable(@Param("voteTitle") String voteTitle, @Param("describes") String describes, @Param("remarks") String remarks, @Param("startTime") Long startTime, @Param("endTime") Long endTime, @Param("id") String id);
 
     /**
-     * 更新选择表
+     *根据选择表id 更新选择表
      *
      * @param optionTitle
      * @param pictureUrl
-     * @param viewUrl
-     * @param optionFlag
      * @param remarks
      * @param id
      * @return
      */
-    @Update("UPDATE option_table SET option_title=IFNULL(#{optionTitle},option_title)," + "picture_url=IFNULL(#{pictureUrl},picture_url) ,view_url=IFNULL(#{viewUrl},view_url)," + "option_flag=IFNULL(#{optionFlag},option_flag)  ,remarks=IFNULL(#{remarks},remarks) WHERE id=#{id} ")
-    Integer updateOptionTable(@Param("optionTitle") String optionTitle, @Param("pictureUrl") String pictureUrl, @Param("viewUrl") String viewUrl, @Param("optionFlag") Integer optionFlag, @Param("remarks") String remarks, @Param("id") Integer id);
+    @UpdateProvider(type = VoteSqlBuilder.class,method = "updateOptionTable")
+    Integer updateOptionTable(@Param("optionTitle") String optionTitle, @Param("pictureUrl") String pictureUrl, @Param("remarks") String remarks, @Param("department") String department,@Param("id") Integer id);
 
     /**
-     * 修改主表状态
+     * 修改主表状态为发布状态
      *
      * @param id
      * @return
      */
-    @Update("UPDATE vote_main_table SET state=2 WHERE id=#{id}")
+    @Update("UPDATE vote_main_table SET state=2 WHERE state=1 AND id=#{id}")
     Integer updateState(@Param("id") String id);
 
     /**
-     * 通过主表id删除主表
-     *
+     * 修改投票状态为过期状态
      * @param id
      * @return
      */
-    @Delete("DELETE FROM vote_main_table WHERE id=#{id} AND state=1")
-    Integer deleteVoteMainTable(@Param("id") String id);
+    @Update("UPDATE vote_main_table SET state=4 WHERE state=2 AND id=#{id}")
+    Integer updateState4(@Param("id") String id);
+
+    /**
+     * 根据选择表id删除选择表子表
+     * @param optionId
+     * @return
+     */
+    @Update("UPDATE option_sublist_table SET  state_sublist=0 WHERE option_id=#{optionId}")
+    Integer updateSublist(@Param("optionId") Integer optionId);
+
+    /**
+     *
+     *删除主表
+     * @param id 主表id
+     * @return
+     */
+    @Update("UPDATE vote_main_table SET state=3 WHERE state=1 AND id=#{id}")
+    Integer deleteVoteMainTable(@Param("id") String id );
 
     /**
      * 通过主键删除 选择表
@@ -161,14 +204,14 @@ public interface VoteMapper {
      * @param id
      * @return
      */
-    @Delete("DELETE FROM option_table WHERE  vote_id=#{id}")
+    @Update("UPDATE option_table SET state_option=0 WHERE  vote_id=#{id}")
     Integer deleteOptionTable(@Param("id") String id);
 
 
     /**
      * 根据选择表id 删除选择表
      */
-    @Delete("DELETE FROM option_table WHERE  id=#{id}")
+    @Update("UPDATE option_table SET state_option=0 WHERE id=#{id}")
     Integer deleteOptionTableById(@Param("id") Integer id);
 
     /**
@@ -193,12 +236,13 @@ public interface VoteMapper {
 
     /**
      * 当前登陆人是否可以投票
+     *
      * @param optionId
      * @param loginNum
      * @return
      */
     @Select("SELECT COUNT(id)  FROM  answer_table WHERE option_id=#{optionId} and  option_title=#{loginNum} AND TO_DAYS(create_time)=TO_DAYS(NOW())")
-    Integer isVote(@Param("optionId") Integer optionId,@Param("loginNum") String loginNum);
+    Integer isVote(@Param("optionId") Integer optionId, @Param("loginNum") String loginNum);
 
     /**
      * 验证用户投票条数——根据行员号和主表id查询选择表id
@@ -207,7 +251,7 @@ public interface VoteMapper {
      * @return
      */
     @Select("SELECT  o.id  FROM  vote_main_table v LEFT JOIN option_table o ON o.vote_id =v.id WHERE  v.id=#{voteId} GROUP BY o.id")
-    List<Integer> selectOpIdByVoteIdAnduserNum( @Param("voteId") String voteId);
+    List<Integer> selectOpIdByVoteIdAnduserNum(@Param("voteId") String voteId);
 
     /**
      * 验证用户投票条数——根据行员号查询答案表条数
@@ -218,8 +262,27 @@ public interface VoteMapper {
     @Select(" SELECT COUNT(a.id) AS count  FROM  option_table o  LEFT JOIN answer_table a ON a.option_id=o.id WHERE   a.option_title=#{userNum} AND o.id=#{opId} AND TO_DAYS(a.create_time)=TO_DAYS(NOW())")
     Integer getAnswerCount(@Param("userNum") String userNum, @Param("opId") Integer opId);
 
-    class IntegralSqlBuilder {
-        Logger logger = LoggerFactory.getLogger( IntegralSqlBuilder.class );
+    /**
+     * 更新子表信息
+     * @param id 子表id
+     * @param pictureUrl 图片路径
+     * @param viewUrl 视频路径
+     * @param sublistTitle 子表说明
+     * @param remarks 备注
+     * @return
+     */
+    @UpdateProvider(type = VoteSqlBuilder.class, method = "updateOptionSublist")
+    Integer updateOptionSublist(@Param("id")  Integer id,@Param("pictureUrl")  String pictureUrl,@Param("viewUrl")  String viewUrl,@Param("sublistTitle")  String sublistTitle,@Param("remarks")  String remarks );
+
+    /**
+     * 删除子表
+     * @param id
+     * @return
+     */
+    @Update("UPDATE option_sublist_table SET state_sublist=0 WHERE id=#{id}")
+    Integer deleteSublistSate(@Param("id") Integer id);
+    class VoteSqlBuilder {
+        Logger logger = LoggerFactory.getLogger(VoteSqlBuilder.class);
 
         /**
          * 根据主表id 修改主表
@@ -229,28 +292,127 @@ public interface VoteMapper {
          * @param id
          * @return
          */
-        public String updateVoteMainTable(@Param("voteTitle") final String voteTitle, @Param("endTime") final Long endTime, @Param("id") final String id) {
+        public String updateVoteMainTable(@Param("voteTitle") final String voteTitle, @Param("describes") final String describes, @Param("remarks") final String remarks, @Param("startTime") final Long startTime, @Param("endTime") final Long endTime, @Param("id") final String id) {
             StringBuffer sql = new StringBuffer();
             try {
-                sql.append( "UPDATE  vote_main_table" );
+                sql.append("UPDATE  vote_main_table");
 
-                if (!"".equals( voteTitle ) && null != voteTitle) {
-                    sql.append( "  set  vote_title=#{voteTitle}   " );
-
-                    if (!"".equals( endTime ) && null != endTime) {
-                        sql.append( " , end_time=#{endTime} " );
-                    }
-                } else {
-                    if (!"".equals( endTime ) && null != endTime) {
-                        sql.append( " set end_time=#{endTime} " );
-                    }
+                if (!"".equals(voteTitle) && null != voteTitle) {
+                    sql.append("  set  vote_title=#{voteTitle}   ");
+                }else {
+                    sql.append("  set  vote_title=vote_title   ");
                 }
-                sql.append( "WHERE state=1 AND id=#{id}" );
+                if (!"".equals(describes) && null != describes) {
+                    sql.append(" , describes=#{describes} ");
+                }else {
+                    sql.append(" , describes=describes ");
+                }
+                if (!"".equals(remarks) && null != remarks) {
+                    sql.append(" , remarks=#{remarks} ");
+                }else {
+                    sql.append(" , remarks=remarks ");
+                }
+                if (!"".equals(startTime) && null != startTime) {
+                    sql.append(" , start_time=#{startTime} ");
+                }else {
+                    sql.append(" , start_time=start_time ");
+                }
+                if (!"".equals(endTime) && null != endTime) {
+                    sql.append(" , end_time=#{endTime} ");
+                }else {
+                    sql.append(" , end_time=end_time");
+                }
+                sql.append(" WHERE state=1 AND id=#{id}");
             } catch (Exception e) {
-                logger.error( "error is mapper updateVoteMainTable:sql" + sql.toString(), e );
+                logger.error("error is mapper updateVoteMainTable:sql" + sql.toString(), e);
             }
-            logger.info( "----查询sql==" + sql.toString() );
+            logger.info("----更新主表sql==" + sql.toString());
             return sql.toString();
+        }
+
+        /**
+         * 更新子表查询
+         * @param id
+         * @param pictureUrl
+         * @param viewUrl
+         * @param sublistTitle
+         * @param remarks
+         * @return
+         */
+        public String updateOptionSublist(@Param("id") final Integer id,@Param("pictureUrl") final String pictureUrl,@Param("viewUrl") final String viewUrl,@Param("sublistTitle") final String sublistTitle,@Param("remarks") final String remarks ){
+            StringBuffer sql = new StringBuffer();
+            try {
+                 sql.append(" UPDATE option_sublist_table ");
+                if (!"".equals(pictureUrl) && null != pictureUrl) {
+                    sql.append("SET picture_url=#{pictureUrl},");
+                }else {
+                    sql.append("SET picture_url=picture_url, ");
+                }
+                if (!"".equals(viewUrl) && null != viewUrl) {
+                    sql.append("view_url=#{viewUrl},");
+                }else {
+                    sql.append("view_url=view_url,");
+                }
+
+                if (!"".equals(sublistTitle) && null != sublistTitle) {
+                    sql.append(" sublist_title=#{sublistTitle},");
+                }else {
+                    sql.append(" sublist_title=sublist_title,");
+                }
+                if (!"".equals(remarks) && null != remarks) {
+                    sql.append(" remarks=#{remarks}");
+                }else {
+                    sql.append(" remarks=remarks");
+                }
+                sql.append(" WHERE id=#{id}");
+            }catch (Exception e){
+                logger.error("error is mapper updateOptionSublist:sql" + sql.toString(), e);
+            }
+            logger.info(" 更新子表 updateOptionSublist:sql" + sql.toString());
+           return sql.toString();
+        }
+
+        /**
+         *根据选择表id 更新选择表
+         * @param optionTitle
+         * @param pictureUrl
+         * @param remarks
+         * @param id
+         * @return
+         */
+        public String updateOptionTable(@Param("optionTitle") final String optionTitle, @Param("pictureUrl")  final  String pictureUrl, @Param("remarks") final String remarks,@Param("department") final String department, @Param("id") final Integer id){
+              StringBuilder sql=new StringBuilder();
+               try {
+                    sql.append("UPDATE option_table ");
+                   if (!"".equals(optionTitle) && null != optionTitle) {
+                       sql.append(" SET option_title=#{optionTitle},");
+                   }else {
+                       sql.append(" SET option_title=option_title , ");
+                   }
+
+                   if (!"".equals(pictureUrl) && null != pictureUrl) {
+                       sql.append("picture_url=#{pictureUrl},");
+                   }else {
+                       sql.append("picture_url=picture_url, ");
+                   }
+                   if (!"".equals(remarks) && null != remarks) {
+                       sql.append("remarks=#{remarks}, ");
+                   }else {
+                       sql.append("remarks=remarks , ");
+                   }
+                   if (!"".equals(department) && null != department) {
+                       sql.append("department=#{department} ");
+                   }else {
+                       sql.append("department=department  ");
+                   }
+                   sql.append(" WHERE id=#{id}");
+
+               }catch (Exception e){
+                   logger.error("error is mapper updateOptionTable:sql" + sql.toString(), e);
+               }
+            logger.info(" 更新子表 updateOptionTable:sql" + sql.toString());
+               return  sql.toString();
+
         }
 
     }

@@ -27,7 +27,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2/vote")
-@Api("投票详情api文档")
+@Api("信息采集统计api文档")
 public class VoteDetailsController {
     private Logger log = LoggerFactory.getLogger(VoteDetailsController.class);
     @Autowired

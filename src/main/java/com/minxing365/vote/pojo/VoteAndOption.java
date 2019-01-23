@@ -30,7 +30,10 @@ public class VoteAndOption {
     private Integer optionFlag;
     //备注
     private String remarks;
-    private String createTime;
+    //开始时间
+    private String startTime;
+
+    private String department;
 
     public String getId() {
         return id;
@@ -136,11 +139,23 @@ public class VoteAndOption {
         this.remarks = remarks;
     }
 
-    public String getCreateTime() {
-        return createTime;
+    public void setState(Integer state) {
+        this.state = state;
     }
 
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 }

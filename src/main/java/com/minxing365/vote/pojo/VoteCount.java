@@ -1,5 +1,7 @@
 package com.minxing365.vote.pojo;
 
+import com.minxing365.vote.bean.OptionSublistTable;
+
 import java.util.List;
 
 /**
@@ -7,17 +9,19 @@ import java.util.List;
  */
 public class VoteCount {
     //主标题目
-  private   String vote;
+    private String vote;
     //描述
-    private  String describes;
+    private String describes;
     // 备注
     private String remarks;
     //总条数
     private Integer total;
     //总页数
     private Integer pages;
-   //选择列表
-  private List<AnswerCount> list;
+    //选择列表
+    private List<AnswerCount> listOption;
+    //选择表子表
+    private List<OptionSublistTable> listSublist;
 
     public String getVote() {
         return vote;
@@ -59,11 +63,19 @@ public class VoteCount {
         this.pages = pages;
     }
 
-    public List<AnswerCount> getList() {
-        return list;
+    public List<AnswerCount> getListOption() {
+        return listOption;
     }
 
-    public void setList(List<AnswerCount> list) {
-        this.list = list;
+    public void setListOption(List<AnswerCount> listOption) {
+        this.listOption = listOption;
+    }
+
+    public List<OptionSublistTable> getListSublist() {
+        return listSublist;
+    }
+
+    public void setListSublist(List<OptionSublistTable> listSublist) {
+        this.listSublist = listSublist;
     }
 }
