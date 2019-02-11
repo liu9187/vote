@@ -64,4 +64,6 @@ public interface InitMapper {
             "create_time  timestamp   DEFAULT CURRENT_TIMESTAMP   COMMENT '创建时间',\n"+
             "PRIMARY KEY (`id`)\n" + ")" )
     void initAnswer();
+
+
 }

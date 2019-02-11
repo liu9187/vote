@@ -449,7 +449,7 @@ public class VoteServiceImpl implements VoteService {
         log.info("-------optionTitleStr---" + optionTitleStr);
         //答案统计列表
         List<AnswerCount> list = new ArrayList<>();
-        PageHelper.startPage(pageNum, pageSize);
+       // PageHelper.startPage(pageNum, pageSize);
         //根据主表id调用选择表信息
         //获取选择表信息
         List<OptionTable> optionList = voteMapper.selectOptionTableByTitle(optionTitleStr, voteId);
@@ -481,6 +481,10 @@ public class VoteServiceImpl implements VoteService {
                 //选择表备注
                 String remarks = optionList.get(j).getRemarks();
                 answerCount.setRemarks(remarks);
+                //获取选择表子类
+                List<OptionSublistTable> listSublist = voteMapper.selectSublistByOptionId(optionId);
+                //选择表子类添加到对象
+                answerCount.setListSublist(listSublist);
                 //获取答案总条数
                 Integer count = voteMapper.selectCount(optionId);
                 //答案总条数 添加到 list

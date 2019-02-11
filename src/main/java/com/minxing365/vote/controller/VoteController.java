@@ -99,11 +99,13 @@ public class VoteController {
         voteMainTable.setState(1);
         try {
             String result = voteService.insertVoteMainTable(voteMainTable);
-            // if (null != result && result > 0) {
+             if (null != result ) {
             log.info("-----insertVoteMainTable : result----" + result);
             jsonObject.put("message", "新增方法成功");
             jsonObject.put("result", result);
-            //  }
+              }else{
+                 jsonObject.put("message", "新增方法失败");
+             }
         } catch (Exception e) {
             jsonObject.put("message", "<<<<<<新增方法失败");
             jsonObject.put("result", -1);
@@ -683,8 +685,8 @@ public class VoteController {
             @ApiImplicitParam(name = "pageSize", paramType = "query", dataType = "String", value = "每页显示条数")})
     @RequestMapping(value = "/selectOptionTableByTitle", method = {RequestMethod.GET})
     public String selectOptionTableByTitle(@RequestParam(defaultValue = "") String optionTitle,
-                                           @RequestParam(defaultValue = "1") Integer pageNum,
-                                           @RequestParam(defaultValue = "6") Integer pageSize,
+                                           @RequestParam(defaultValue = "1",required = false) Integer pageNum,
+                                           @RequestParam(defaultValue = "6",required = false) Integer pageSize,
                                            @RequestParam(defaultValue = "") String voteId) {
         log.info("--selectOptionTableByTitle---optionTitle=" + optionTitle + ";pageNum=" + pageNum + " ;pageSize=" + pageSize + ";voteId=" + voteId);
         String result = null;

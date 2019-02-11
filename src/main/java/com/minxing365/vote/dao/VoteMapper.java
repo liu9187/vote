@@ -138,7 +138,18 @@ public interface VoteMapper {
      * @param optionTitle
      * @return
      */
-    @Select("SELECT  id,vote_id AS voteId,option_title AS optionTitle,picture_url AS pictureUrl,view_url AS viewUrl,option_flag AS optionFlag ,remarks  FROM  option_table WHERE  vote_id=#{voteId} AND  option_title LIKE #{optionTitle}")
+    @Select("SELECT\n" +
+            "\tid,\n" +
+            "\tvote_id AS voteId,\n" +
+            "\toption_title AS optionTitle,\n" +
+            "\tpicture_url AS pictureUrl,\n" +
+            "  department,\n" +
+            "  state_option AS stateOption, \n" +
+            "\tremarks\n" +
+            "FROM\n" +
+            "\toption_table\n" +
+            "WHERE\n" +
+            "\tvote_id = #{voteId} AND state_option=1 AND  option_title LIKE #{optionTitle}")
     List<OptionTable> selectOptionTableByTitle(@Param("optionTitle") String optionTitle, @Param("voteId") String voteId);
 
     /**
