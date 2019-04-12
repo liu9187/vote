@@ -22,7 +22,7 @@ import java.util.Date;
 /**
  * @author SuZZ on 2018/4/24.
  */
-//@WebFilter(filterName = "VoteFilter",urlPatterns = {"/api/v2/vote/*"})
+@WebFilter(filterName = "VoteFilter",urlPatterns = {"/api/v2/vote/*"})
 public class VoteFilter implements Filter {
 
     static Logger logger = LoggerFactory.getLogger(VoteFilter.class);
