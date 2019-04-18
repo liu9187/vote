@@ -1,5 +1,6 @@
 package com.minxing365.vote.dao;
 import com.minxing365.vote.bean.Oauth2AccessToken;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
  * Created by SZZ on 2017/5/10.
  */
 @Component
+@Mapper
 public interface UserMapper {
     /**
      * 查询用户
