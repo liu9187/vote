@@ -817,6 +817,7 @@ public class VoteController {
             file.mkdirs();
         }
         FileOutputStream fileOutputStream = null;
+
         try {
 
             //获取文件名和后缀

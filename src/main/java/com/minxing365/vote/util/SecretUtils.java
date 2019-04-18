@@ -1,24 +1,24 @@
 package com.minxing365.vote.util;
 
+import com.minxing365.util.crypto.AesUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Properties;
 
 /**
- * 3DES加密解密工具类
+ * 加密解密工具类
  */
 public class SecretUtils {
     //定义加密算法有DES ,DESede（3DES）,BlowFish
     public static final String Algorithm = "DESede";
-    public static final String PASSWORD_CRYPT_KEY = "zhihuijiangnanjiamijiemi";
+    public static final String PASSWORD_CRYPT_KEY = "MTfP89NHWdQVeBwn";
     /**
      * 转换成十六进制字节数组
      *
@@ -37,7 +37,7 @@ public class SecretUtils {
 
 
     /**
-     * 加密
+     * 加密 3DES
      *
      * @param key
      * @param srcStr
@@ -101,10 +101,65 @@ public class SecretUtils {
         return null;
     }
 
+    /**
+     * 平台解密
+     * @param key 秘钥
+     * @param desStr  密文
+     * @return
+     */
+    public static String decode(String key, String desStr){
+        String  decrypt=null;
+        try {
+            decrypt=    AesUtil.decrypt(desStr,key,null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        return  decrypt;
+    }
 
-//    public static void main(String[] args) throws IOException {
-//
-//       //
+    /**
+     * 平台加密
+     * @param key
+     * @param srcStr
+     * @return
+     */
+    public static String encode(String key, String srcStr) {
+        String  encrypt=null;
+        try {
+              encrypt=  AesUtil.encrypt(srcStr,key,null);
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        return encrypt;
+    }
+
+    public static void main(String[] args) throws IOException {
+
+       //
 //        FileInputStream fin=new FileInputStream( "config/application.properties" );
 //        Properties properties=new Properties(  );
 //        properties.load( fin );
@@ -112,11 +167,18 @@ public class SecretUtils {
 //         if (null==password||"".equals( password )){
 //             System.out.println("password failed");
 //         }else {
+//             //HFPvAGRvED0Eueng56TFhA==
 //             String encode=  SecretUtils.encode3Des( PASSWORD_CRYPT_KEY,password);
 //             System.out.println("【加密之后】"+encode);
-//             String decode=   SecretUtils.decode3Des( PASSWORD_CRYPT_KEY,password );
+//             String decode=   SecretUtils.decode3Des( PASSWORD_CRYPT_KEY,encode );
 //             System.out.println("【解密之后】"+decode);
 //         }
-//
-//    }
+
+                     //HFPvAGRvED0Eueng56TFhA==
+             String encode=  SecretUtils.encode( "MTfP89NHWdQVeBwn","minxing678");
+             System.out.println("【加密之后】"+encode);
+             String decode=   SecretUtils.decode( "MTfP89NHWdQVeBwn",encode );
+             System.out.println("【解密之后】"+decode);
+
+    }
 }
